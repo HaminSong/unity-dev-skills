@@ -107,3 +107,4 @@ if ($failures.Count -gt 0) {
     exit 1
 }
 Write-Output "All checks passed."
+exit 0 # the last child run was an expected failure; don't let its exit code leak out

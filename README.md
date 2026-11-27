@@ -72,7 +72,7 @@ These routes follow the shared format but **have only been tested in Claude Code
 ### Requirements
 
 - Unity 6 project with the **Input System** and **Test Framework** packages (the scaffold warns if they are missing)
-- PowerShell to run `scaffold.ps1`: Windows PowerShell 5.1 (built in) is tested. PowerShell 7 (`pwsh`) on macOS/Linux is untested. The script runs with `-ExecutionPolicy Bypass` for that one process only and changes no machine policy.
+- PowerShell to run `scaffold.ps1`: Windows PowerShell 5.1 (built in) or PowerShell 7 (`pwsh`) on Windows, macOS or Linux; CI checks all of them. The script runs with `-ExecutionPolicy Bypass` for that one process only and changes no machine policy.
 - Optional: Git and Git LFS; [`unity-cli`](https://github.com/Unity-Technologies/unity-agent-plugin) so the agent can refresh the Editor, invoke the menu and run tests itself
 
 ## Before you use it
@@ -161,25 +161,32 @@ plugins/unity-project-setup/
     scripts/scaffold.ps1                 folders, asmdefs, template copies (skips existing files)
     templates/                           source of every file written into the project
     references/                          layer decisions, adoption path, why each rule exists
+tests/scaffold.Tests.ps1                 scaffold checks, run by CI
+.github/workflows/scaffold.yml           CI: the checks on Ubuntu, macOS and Windows
 ```
 
 ## Verification status (0.1.0)
 
-- `scaffold.ps1` (Windows PowerShell 5.1): fresh run, re-run (everything skipped), layer removal, URP off, missing-package warnings, invalid prefix/layer/orientation, non-Unity folder.
-- End-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
+- **Automated (CI on every push):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) runs 50 checks on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1. The checks cover:
+  - dry run and real run, then a re-run that skips everything
+  - folders, asmdefs and reference rules
+  - layer removal, URP off and fast Play Mode
+  - missing-package warnings, invalid input and a non-Unity folder
+- **Run by the author, not automated:** end-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0): in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
   - all generated code compiles; scripts placed in a layer folder compile into that layer's assembly (none fall into `Assembly-CSharp`)
   - **Tools > Project Setup > Apply Defaults** runs and every setting is saved to `ProjectSettings/`. Without `-FastPlayMode` the Enter Play Mode settings are left untouched; with it, Domain Reload is turned off
-  - the 13 EditMode tests pass through the Unity Test Runner, including a no-GC-allocation check on Publish
+  - the 13 EditMode tests pass through the Unity Test Runner. The no-GC-allocation check on Publish was confirmed to fail when Publish allocates
+  - in a project without the Input System package, Apply Defaults leaves Active Input Handling unchanged and warns
   - forbidden references fail to compile: Core → UnityEngine (`CS0246`) and UI → Gameplay (`CS0234`)
-- Git steps on the generated project:
+- **Git steps on the generated project (run by the author):**
   - `git init -b main`, first commit on `main`, then `develop` on the same commit
   - `git lfs install --local` leaves the global git config unchanged
   - `.gitignore` excludes `Library/`; images route through LFS
   - with the merge driver from `docs/collaboration.md` §2a configured, git invokes UnityYAMLMerge and combines edits to two different fields of a settings asset
   - the `ship-to-develop` git sequence with no remote: `feat/` commit → merge into `develop` → branch deleted, no push
-- These checks were run by the author and are not yet automated in this repository.
+- **Install:** installing as a Claude Code plugin from this repository, which registers one skill.
 - **Not yet verified:**
-  - `scaffold.ps1` under PowerShell 7 on macOS/Linux
+  - Unity compile and tests in CI (these run only on the author's machine today)
   - installing on agents other than Claude Code
   - `ship-to-develop` driven by an agent, including the push confirmation
   - adopting the structure in an existing project with many scripts

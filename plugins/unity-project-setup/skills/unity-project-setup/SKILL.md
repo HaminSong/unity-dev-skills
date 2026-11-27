@@ -53,7 +53,7 @@ The script does everything that must come out the same every time: folders, asmd
 powershell -ExecutionPolicy Bypass -File "<skill dir>/scripts/scaffold.ps1" `
   -ProjectPath "<project>" -Prefix Game -Product "My Game" -Company "DefaultCompany" `
   -Orientation Portrait -DryRun
-# macOS / Linux (PowerShell 7, untested): same arguments
+# macOS / Linux (PowerShell 7): same arguments
 pwsh -File "<skill dir>/scripts/scaffold.ps1" -ProjectPath "<project>" -Prefix Game -DryRun
 ```
 
