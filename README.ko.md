@@ -2,7 +2,7 @@
 
 [![scaffold CI](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml/badge.svg)](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.0-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.2.1-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
 
@@ -121,7 +121,7 @@ Unity 공식 [`unity:new-unity-project`](https://github.com/Unity-Technologies/u
 
 **이 스킬이 하지 않는 것:** 이 스킬만으로 에이전트가 알아서 다 하게 되지는 않습니다. 무엇을 만들지 정하고, 검토하고, `main`에 반영하는 것은 사람이 합니다.
 
-## 검증 상태 (0.2.0)
+## 검증 상태 (0.2.1)
 
 - **자동(CI, `main` push와 PR마다):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1)의 검사 50개를 PowerShell 7(Ubuntu, macOS, Windows)과 Windows PowerShell 5.1에서 실행합니다.
 - **작성자가 직접 실행(Unity 6000.3.28f1, 배치 모드):**

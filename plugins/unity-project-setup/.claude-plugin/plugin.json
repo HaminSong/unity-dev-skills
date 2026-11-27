@@ -1,7 +1,7 @@
 {
   "name": "unity-project-setup",
   "description": "Prepares a Unity project for AI-agent-driven development: layered asmdefs the compiler enforces, standard folders, Editor-applied project settings, Unity git files, AGENTS.md/CLAUDE.md with a docs/ set agents keep current, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "HaminSong"
   },
