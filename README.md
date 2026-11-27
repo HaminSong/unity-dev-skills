@@ -6,6 +6,8 @@
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
 
+**English** | [한국어](README.ko.md)
+
 Agent skills for building Unity games with AI coding agents. Built and tested with Claude Code; the skill format and generated files are not Claude-specific.
 
 | Plugin | What it does |
@@ -162,6 +164,7 @@ plugins/unity-project-setup/
     scripts/scaffold.ps1                 folders, asmdefs, template copies (skips existing files)
     templates/                           source of every file written into the project
     references/                          layer decisions, adoption path, why each rule exists
+README.ko.md                             Korean summary
 tests/scaffold.Tests.ps1                 scaffold checks, run by CI
 .github/workflows/scaffold.yml           CI: the checks on Ubuntu, macOS and Windows
 ```
