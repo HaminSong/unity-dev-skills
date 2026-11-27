@@ -1,6 +1,6 @@
 # Why these rules exist
 
-Read this when the user asks why a rule exists or wants to change one. Every rule below was added after something actually went wrong on the project these conventions come from: a mobile arcade game built by one developer working with several AI coding agents in the same repository and the same Unity Editor. Change a rule knowing what it prevents, or the same incident comes back.
+Read this when the user asks why a rule exists or wants to change one. Every rule below was added after something actually went wrong on the project these conventions come from: a mobile arcade game in development, built by one developer working with several AI coding agents in the same repository and the same Unity Editor. Change a rule knowing what it prevents, or the same incident comes back.
 
 ## Structure
 

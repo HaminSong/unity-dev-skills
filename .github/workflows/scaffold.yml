@@ -1,0 +1,32 @@
+name: scaffold
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pwsh:
+    name: PowerShell 7 (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run scaffold checks
+        shell: pwsh
+        run: ./tests/scaffold.Tests.ps1
+
+  windows-powershell:
+    name: Windows PowerShell 5.1
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run scaffold checks
+        shell: powershell
+        run: .\tests\scaffold.Tests.ps1

@@ -17,7 +17,7 @@ Agent skills for building Unity games with AI coding agents. Built and tested wi
 
 Agents do better work when the repository tells them where code goes, what they must not touch, how to check their own work and how to hand off to the next session. When those answers live only in someone's head, agents guess. This skill writes the answers into the project on day one, as real files: folders and assemblies that the compiler enforces, settings applied through the Editor, and a `docs/` set that agents read first and keep current.
 
-The rules were not designed up front. Each was added after a real incident on a shipped mobile game, built by one developer with several AI agents sharing the same repository and Unity Editor. [`why-these-rules.md`](plugins/unity-project-setup/skills/unity-project-setup/references/why-these-rules.md) records the incident behind each rule.
+The rules were not designed up front. Each was added after a real incident on a mobile game in development, built by one developer with several AI agents sharing the same repository and Unity Editor. [`why-these-rules.md`](plugins/unity-project-setup/skills/unity-project-setup/references/why-these-rules.md) records the incident behind each rule.
 
 Ask your agent something like:
 
@@ -32,7 +32,7 @@ Assets/
   Art/ Audio/ Data/ Materials/ Prefabs/ Scenes/ Settings/ Shaders/ ThirdParty/
   Scripts/
     Core/            Game.Core        pure C# (noEngineReferences): rules, contracts, events
-      Tests/EditMode Game.Core.Tests  EventBus tests (8)
+      Tests/EditMode Game.Core.Tests  EventBus tests (13)
     Data/            Game.Data        ScriptableObject tuning and content
     Gameplay/        Game.Gameplay    physics, input, world, camera, audio
     UI/              Game.UI          HUD and screens — never references Gameplay
@@ -136,7 +136,7 @@ They start as templates. The agent fills in only what it knows (a one-line game 
 ### Other details
 
 - **Settings applied through the Editor API.** Force Text, Visible Meta Files, Linear, orientation, Input System only and, if chosen, fast Enter Play Mode are applied by an Editor menu. `ProjectSettings/*.asset` files are never copied, because their format changes between Unity versions.
-- **Starter code with tests.** A synchronous `EventBus` (subscribing or disposing during a publish is safe and takes effect from the next publish) with 8 EditMode tests, plus a composition-root skeleton.
+- **Starter code with tests.** A synchronous, allocation-free `EventBus` (subscribing or disposing from a handler is safe; disposal takes effect immediately) with 13 EditMode tests, plus a composition-root skeleton.
 - **`.editorconfig` naming rules** that match the coding guidelines (`_camelCase` fields, `s_` statics, `I` interfaces).
 
 ## Customizing the conventions
@@ -169,7 +169,7 @@ plugins/unity-project-setup/
 - End-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
   - all generated code compiles; scripts placed in a layer folder compile into that layer's assembly (none fall into `Assembly-CSharp`)
   - **Tools > Project Setup > Apply Defaults** runs and every setting is saved to `ProjectSettings/`. Without `-FastPlayMode` the Enter Play Mode settings are left untouched; with it, Domain Reload is turned off
-  - the 8 EditMode tests pass through the Unity Test Runner
+  - the 13 EditMode tests pass through the Unity Test Runner, including a no-GC-allocation check on Publish
   - forbidden references fail to compile: Core → UnityEngine (`CS0246`) and UI → Gameplay (`CS0234`)
 - Git steps on the generated project:
   - `git init -b main`, first commit on `main`, then `develop` on the same commit

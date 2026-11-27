@@ -8,9 +8,10 @@ namespace {{PREFIX}}.Core
     {
         /// <summary>Publishes an event. Every subscribed handler runs immediately (synchronously), in subscription order.</summary>
         /// <remarks>
-        /// Handlers run over a snapshot taken when Publish starts: subscribing or disposing during a publish is safe,
-        /// but only takes effect from the next publish (a handler disposed mid-publish still receives the current event).
-        /// An exception thrown by a handler propagates to the publisher and the remaining handlers are not called.
+        /// Subscribing or disposing from inside a handler is safe. A disposal takes effect immediately: a handler whose
+        /// subscription is disposed earlier in the same publish is skipped. A subscription added during a publish is called
+        /// from the next publish on. An exception thrown by a handler propagates to the publisher and the remaining
+        /// handlers for that publish are not called.
         /// </remarks>
         void Publish<T>(T evt) where T : IGameEvent;
 

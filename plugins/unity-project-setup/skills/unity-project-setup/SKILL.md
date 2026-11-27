@@ -7,7 +7,7 @@ description: Prepares a new Unity project for development with AI coding agents 
 
 Lays the groundwork and ground rules for handing a Unity project to AI agents.
 
-Agents do good work when the repository tells them where code goes, what they must not touch, how to check their own work and how to hand off to the next session. They do poor work when those answers live only in someone's head. Teams usually learn the answers one incident at a time: a file grows to 2,000 lines, so a split rule appears; branch names drift three ways, so a naming rule appears; a test overwrites an open prefab, so a testing rule appears. By then the rules are scattered across chats and half-remembered docs. This skill writes the whole set into the project on day one: assemblies that the compiler enforces, settings applied through the Editor, and a `docs/` set that agents read first and keep current. The rules come from a shipped mobile game built by one developer with several AI agents; `references/why-these-rules.md` records the incident behind each one.
+Agents do good work when the repository tells them where code goes, what they must not touch, how to check their own work and how to hand off to the next session. They do poor work when those answers live only in someone's head. Teams usually learn the answers one incident at a time: a file grows to 2,000 lines, so a split rule appears; branch names drift three ways, so a naming rule appears; a test overwrites an open prefab, so a testing rule appears. By then the rules are scattered across chats and half-remembered docs. This skill writes the whole set into the project on day one: assemblies that the compiler enforces, settings applied through the Editor, and a `docs/` set that agents read first and keep current. The rules come from a mobile game in development, built by one developer with several AI agents; `references/why-these-rules.md` records the incident behind each one.
 
 **What this skill produces:** folders, `.asmdef` files, starter C# code with tests, an Editor menu that applies project settings, git attributes and ignores, an `.editorconfig`, a `docs/` set, `AGENTS.md`/`CLAUDE.md`, and a project-local commit skill. It ends with a report of what was created and what still needs checking inside Unity.
 
@@ -74,7 +74,7 @@ What the script lays down:
 | `Assets/` | `Art`, `Audio`, `Data`, `Materials`, `Prefabs`, `Scenes`, `Settings`, `Shaders`, `ThirdParty` (no `Resources/` — Unity discourages it; use direct references or Addressables) |
 | `Assets/Scripts/<Layer>/` | One asmdef per layer; reference rules in `templates/docs/architecture-design.md` §2 |
 | `Assets/Scripts/Core/` | `IEventBus`, `EventBus`, `IGameEvent` + `GameBootedEvent` |
-| `Assets/Scripts/Core/Tests/EditMode/` | Test asmdef and `EventBusTests` (8 tests) |
+| `Assets/Scripts/Core/Tests/EditMode/` | Test asmdef and `EventBusTests` (13 tests) |
 | `Assets/Scripts/Bootstrap/` | `GameBootstrapper` composition root skeleton |
 | `Assets/Scripts/Editor/ProjectSetup/` | `ApplyProjectSettings` (run in Step 3) |
 | Project root | `.gitattributes`, `.gitignore`, `.editorconfig`, `AGENTS.md`, `CLAUDE.md` |
@@ -92,7 +92,7 @@ Settings are applied through the Editor API rather than by copying `ProjectSetti
    - Active Input Handling: Input System only
    - Only with `-FastPlayMode`: Enter Play Mode Options on, Domain Reload off, Scene Reload on. Without it, Enter Play Mode settings are left untouched. The coding rule "reset mutable statics on Play" in `coding-guidelines.md` applies either way, so the project can switch later without new bugs.
 3. Switching Active Input Handling needs an **Editor restart**. Ask the user to restart; do not quit their Editor yourself.
-4. Run the `<Prefix>.Core.Tests` EditMode tests and confirm all 8 pass. Close any open Prefab Mode stage first — a test run can write a stale copy over an open prefab.
+4. Run the `<Prefix>.Core.Tests` EditMode tests and confirm all 13 pass. Close any open Prefab Mode stage first — a test run can write a stale copy over an open prefab.
 
 If you cannot reach the Editor, list these four items under "still to do" in the report instead of claiming them.
 

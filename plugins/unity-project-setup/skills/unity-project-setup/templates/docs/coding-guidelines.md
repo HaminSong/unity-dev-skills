@@ -7,7 +7,14 @@
 
 - **Connect loosely through the event bus.** `IEventBus.Subscribe<T>` / `Publish<T>` (T : `IGameEvent`). Events are `readonly struct`s.
 - **A new signal gets a new event.** Squeezing it into a similar existing event makes that event's other subscribers fire at the wrong time.
-- **Always unsubscribe.** Keep the `IDisposable` returned by `Subscribe` and `Dispose` it in `OnDestroy`.
+- **Always unsubscribe.** Keep the `IDisposable` returned by `Subscribe` and `Dispose` it in `OnDestroy`:
+  ```csharp
+  private IDisposable _onBooted;
+
+  public void Init(IEventBus bus) => _onBooted = bus.Subscribe<GameBootedEvent>(OnBooted);
+
+  private void OnDestroy() => _onBooted?.Dispose();
+  ```
 - **Split interfaces into read and write.** `I*View` / `I*Reader` versus `I*Control` / `I*Writer`. One class may implement both, but callers see only the narrow one they need.
 - **UI that is not placed in a scene is built at runtime through a `static X.Create(...)` factory.**
 - **One home for every rule and formula.** Compute displayed values and applied effects with the same Core function (prevents "the shop shows X, the game applies Y").

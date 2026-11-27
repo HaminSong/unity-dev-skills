@@ -2,6 +2,8 @@ using System;
 using NUnit.Framework;
 using {{PREFIX}}.Core;
 using {{PREFIX}}.Core.Events;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace {{PREFIX}}.Core.Tests
 {
@@ -109,6 +111,80 @@ namespace {{PREFIX}}.Core.Tests
             var bus = new EventBus();
 
             Assert.Throws<ArgumentNullException>(() => bus.Subscribe<OtherEvent>(null));
+        }
+
+        [Test]
+        public void Subscribe_DuringPublish_IsCalledFromNextPublish()
+        {
+            var bus = new EventBus();
+            var lateCalls = 0;
+            var subscribed = false;
+            bus.Subscribe<OtherEvent>(_ =>
+            {
+                if (subscribed) return;
+                subscribed = true;
+                bus.Subscribe<OtherEvent>(__ => lateCalls++);
+            });
+
+            bus.Publish(new OtherEvent());
+            Assert.AreEqual(0, lateCalls);
+
+            bus.Publish(new OtherEvent());
+            Assert.AreEqual(1, lateCalls);
+        }
+
+        [Test]
+        public void Dispose_OtherSubscriptionDuringPublish_SkipsItImmediately()
+        {
+            var bus = new EventBus();
+            var secondCalled = false;
+            IDisposable second = null;
+            bus.Subscribe<OtherEvent>(_ => second.Dispose());
+            second = bus.Subscribe<OtherEvent>(_ => secondCalled = true);
+
+            bus.Publish(new OtherEvent());
+
+            Assert.IsFalse(secondCalled);
+        }
+
+        [Test]
+        public void HandlerException_PropagatesAndSkipsRemainingHandlers()
+        {
+            var bus = new EventBus();
+            var laterCalled = false;
+            bus.Subscribe<OtherEvent>(_ => throw new InvalidOperationException("boom"));
+            bus.Subscribe<OtherEvent>(_ => laterCalled = true);
+
+            Assert.Throws<InvalidOperationException>(() => bus.Publish(new OtherEvent()));
+            Assert.IsFalse(laterCalled);
+        }
+
+        [Test]
+        public void Dispose_SecondOfDuplicateSubscriptions_KeepsTheFirstInPlace()
+        {
+            var bus = new EventBus();
+            var order = "";
+            Action<OtherEvent> a = _ => order += "A";
+            bus.Subscribe(a);
+            bus.Subscribe<OtherEvent>(_ => order += "B");
+            var secondA = bus.Subscribe(a);
+
+            secondA.Dispose();
+            bus.Publish(new OtherEvent());
+
+            Assert.AreEqual("AB", order);
+        }
+
+        [Test]
+        public void Publish_DoesNotAllocate()
+        {
+            var bus = new EventBus();
+            var sum = 0;
+            bus.Subscribe<ValueEvent>(e => sum += e.Value);
+            bus.Subscribe<ValueEvent>(e => sum -= e.Value);
+            bus.Publish(new ValueEvent(1)); // warm up (first call may JIT or grow internals)
+
+            Assert.That(() => bus.Publish(new ValueEvent(2)), Is.Not.AllocatingGCMemory());
         }
     }
 }

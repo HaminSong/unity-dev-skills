@@ -79,6 +79,13 @@ namespace {{PREFIX}}.Editor.ProjectSetup
         /// <summary>Sets Active Input Handling to Input System only (1). There is no public API, so a serialized property is used. Returns true if it changed.</summary>
         private static bool SetInputSystemOnly()
         {
+            // Switching without the package installed would leave the project with no working input at all.
+            if (!IsInputSystemPackageLoaded())
+            {
+                Debug.LogWarning("[ProjectSetup] Input System package (com.unity.inputsystem) is not installed. Active Input Handling was left unchanged. Install the package, then run Apply Defaults again.");
+                return false;
+            }
+
             var asset = GetSettingsAsset("ProjectSettings/ProjectSettings.asset");
             var so = asset != null ? new SerializedObject(asset) : null;
             var handler = so?.FindProperty("activeInputHandler");
@@ -98,6 +105,17 @@ namespace {{PREFIX}}.Editor.ProjectSetup
             so.ApplyModifiedPropertiesWithoutUndo();
             Log("Active Input Handling = Input System only");
             return true;
+        }
+
+        /// <summary>True when the Input System package's runtime assembly is loaded in the Editor (it is whenever the package is installed).</summary>
+        private static bool IsInputSystemPackageLoaded()
+        {
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.GetName().Name == "Unity.InputSystem")
+                    return true;
+            }
+            return false;
         }
 
         private static Object GetSettingsAsset(string path)
