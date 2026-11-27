@@ -1,0 +1,20 @@
+{
+  "name": "unity-dev-skills",
+  "interface": {
+    "displayName": "Unity Dev Skills"
+  },
+  "plugins": [
+    {
+      "name": "unity-project-setup",
+      "source": {
+        "source": "local",
+        "path": "./plugins/unity-project-setup"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

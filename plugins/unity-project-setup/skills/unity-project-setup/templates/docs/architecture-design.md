@@ -34,9 +34,11 @@ flowchart TB
     UI --> CORE
     DATA --> CORE
     PERS --> CORE
-    ED["Editor"] --> BOOT
+    ED["Editor"] -. "references every layer" .-> BOOT
     TEST["Core.Tests"] --> CORE
 ```
+
+asmdef references are not transitive: an arrow means a direct reference in that asmdef. For readability, the diagram draws Editor's references as one dotted arrow; the `Editor` asmdef lists every layer directly, as the table says.
 
 Rules:
 - **Core references nothing.** Not even `Vector3` — define a small value type in Core if needed.

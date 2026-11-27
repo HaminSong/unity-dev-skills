@@ -7,6 +7,11 @@ namespace {{PREFIX}}.Core
     public interface IEventBus
     {
         /// <summary>Publishes an event. Every subscribed handler runs immediately (synchronously), in subscription order.</summary>
+        /// <remarks>
+        /// Handlers run over a snapshot taken when Publish starts: subscribing or disposing during a publish is safe,
+        /// but only takes effect from the next publish (a handler disposed mid-publish still receives the current event).
+        /// An exception thrown by a handler propagates to the publisher and the remaining handlers are not called.
+        /// </remarks>
         void Publish<T>(T evt) where T : IGameEvent;
 
         /// <summary>Subscribes to an event. Dispose the returned IDisposable to unsubscribe — MonoBehaviours must do so in OnDestroy.</summary>

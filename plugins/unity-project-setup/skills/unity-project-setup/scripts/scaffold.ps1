@@ -188,7 +188,7 @@ Write-Output ""
 
 # ---------- 1. asset folders ----------
 $assets = Join-Path $ProjectPath "Assets"
-foreach ($d in @("Art", "Audio", "Data", "Materials", "Prefabs", "Resources", "Scenes", "Settings", "Shaders", "ThirdParty")) {
+foreach ($d in @("Art", "Audio", "Data", "Materials", "Prefabs", "Scenes", "Settings", "Shaders", "ThirdParty")) {
     Ensure-Dir (Join-Path $assets $d)
 }
 

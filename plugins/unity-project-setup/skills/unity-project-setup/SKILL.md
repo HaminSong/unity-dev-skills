@@ -1,6 +1,6 @@
 ---
 name: unity-project-setup
-description: Prepares a Unity project to be built largely by AI coding agents, laying down the structure, ground rules and self-check hooks agents need to work on their own. Creates per-layer Assembly Definitions (engine-free Core, Data, Gameplay, UI, Persistence, Bootstrap, Editor, EditMode tests) whose direction the compiler enforces, a standard Assets tree, settings applied via the Editor API (Force Text, Linear, Input System only, Domain Reload off), Unity .gitattributes/.gitignore with LFS, .editorconfig naming rules, AGENTS.md/CLAUDE.md plus a docs/ set agents keep current, a tested EventBus and a commit workflow skill. Use whenever the user has just created a Unity project; asks for folders, asmdefs, architecture, coding conventions or git rules for a Unity game; wants a project ready for one or several AI agents; or wants to move a small project onto a layered structure — even without the word "scaffold". Complements unity:new-unity-project, which creates the project.
+description: Prepares a new Unity project for development with AI coding agents — layered assembly definitions the compiler enforces, a standard folder tree, Editor-applied project settings, Unity git files, and an AGENTS.md plus docs/ set that agents read first and keep current. Use when the user has just created a Unity project and wants it set up, asks for a folder structure, asmdefs or architecture for a Unity game, or wants a Unity project made ready for AI agents. Not for general coding-style questions. Complements unity:new-unity-project, which creates the project.
 ---
 
 # Unity Project Setup
@@ -48,10 +48,15 @@ If one of these is a problem (legacy `UnityEngine.Input` code, art tuned for Gam
 The script does everything that must come out the same every time: folders, asmdefs with correct references, template copies and placeholder substitution. Always run a dry run first and show the user what will be written, then run it for real.
 
 ```powershell
+# Windows (built-in PowerShell 5.1)
 powershell -ExecutionPolicy Bypass -File "<skill dir>/scripts/scaffold.ps1" `
   -ProjectPath "<project>" -Prefix Game -Product "My Game" -Company "DefaultCompany" `
   -Orientation Portrait -DryRun
+# macOS / Linux (PowerShell 7, untested): same arguments
+pwsh -File "<skill dir>/scripts/scaffold.ps1" -ProjectPath "<project>" -Prefix Game -DryRun
 ```
+
+`-ExecutionPolicy Bypass` applies only to this one process; it lets the unsigned script run without changing the machine's policy. If neither `powershell` nor `pwsh` exists, tell the user PowerShell 7 is needed and stop rather than recreating the script's work by hand.
 
 Options:
 
@@ -64,7 +69,7 @@ What the script lays down:
 
 | Location | Contents |
 |---|---|
-| `Assets/` | `Art`, `Audio`, `Data`, `Materials`, `Prefabs`, `Resources`, `Scenes`, `Settings`, `Shaders`, `ThirdParty` |
+| `Assets/` | `Art`, `Audio`, `Data`, `Materials`, `Prefabs`, `Scenes`, `Settings`, `Shaders`, `ThirdParty` (no `Resources/` — Unity discourages it; use direct references or Addressables) |
 | `Assets/Scripts/<Layer>/` | One asmdef per layer; reference rules in `templates/docs/architecture-design.md` §2 |
 | `Assets/Scripts/Core/` | `IEventBus`, `EventBus`, `IGameEvent` + `GameBootedEvent` |
 | `Assets/Scripts/Core/Tests/EditMode/` | Test asmdef and `EventBusTests` (8 tests) |
@@ -72,7 +77,7 @@ What the script lays down:
 | `Assets/Scripts/Editor/ProjectSetup/` | `ApplyProjectSettings` (run in Step 3) |
 | Project root | `.gitattributes`, `.gitignore`, `.editorconfig`, `AGENTS.md`, `CLAUDE.md` |
 | `docs/` | `README.md` (index), `ARCHITECTURE_MAP.md`, `architecture-design.md`, `coding-guidelines.md`, `collaboration.md`, `tasks/TEMPLATE.md` |
-| `.claude/skills/ship-to-develop/` | Project skill: sync → commit → merge to `develop` → push |
+| `.claude/skills/ship-to-develop/` | Project skill: sync → commit → merge to `develop` → push only with a separate OK |
 
 ### Step 3 — Apply project settings inside Unity
 
@@ -91,8 +96,9 @@ If you cannot reach the Editor, list these four items under "still to do" in the
 
 ### Step 4 — Git
 
-- No repository yet: `git init -b main`, then create and switch to `develop`. If Git LFS is installed, run `git lfs install`.
-- Make the first commit only after the user confirms: `chore: initial project setup (folders, assemblies, settings, docs, rules)`.
+- No repository yet: `git init -b main`. If Git LFS is installed, run `git lfs install --local` — the plain `git lfs install` edits the user's global git config, which this skill must not touch.
+- Make the first commit only after the user confirms, **on `main`**: `chore: initial project setup (folders, assemblies, settings, docs, rules)`. Then create and switch to `develop` (`git switch -c develop`), so both branches exist and point at the setup commit.
+- Optionally offer to configure the Unity smart-merge driver for this repository (`git config`, never `--global`), using the installed Editor's `UnityYAMLMerge` path. The exact commands are in the generated `docs/collaboration.md` §2a. Without it, `merge=unityyamlmerge` in `.gitattributes` silently falls back to a plain text merge.
 - Add a remote or push only when the user gives you the remote.
 
 ### Step 5 — Fill in what only this project knows

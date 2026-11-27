@@ -7,7 +7,7 @@
 
 - The remote holds only `main` and `develop`. Day-to-day work happens on `develop`.
 - One task = one branch: **`feat/<short-name>`** (fixes and docs too — the commit title says what kind of change it is).
-- When done, merge into `develop` and push `develop` only. Task branches are not pushed and are deleted after merging. `main` is updated by the user, for releases.
+- When done, merge into `develop`; the only branch ever pushed is `develop`, and only when the user says so. Task branches are not pushed and are deleted after merging. `main` is updated by the user, for releases.
 - History-rewriting commands (force push, rebasing pushed commits, `reset --hard`) only when the user explicitly asks.
 
 ## 2. Commits
@@ -26,7 +26,20 @@
   Types: `feat` feature · `fix` bug fix · `refactor` structure only, same behaviour · `docs` documentation · `chore` settings, assets, tooling · `test` tests only. Scope is optional (`lobby`, `ui`, `audio` …).
 - If Core changed, EditMode tests must pass before committing. Never skip hooks (`--no-verify`).
 - Update the related `docs/` to the current state and include them in the same commit.
-- The project skill `.claude/skills/ship-to-develop` performs exactly this sequence when the user says "commit", "ship it" or similar.
+- `.claude/skills/ship-to-develop/SKILL.md` performs exactly this sequence when the user asks to ship or merge a task. Pushing always needs the user's explicit OK. Agents that do not load Claude skills can follow the same file as a checklist.
+- Pushing to the remote happens only when the user says so.
+
+## 2a. Smart merge for scenes and prefabs (once per machine)
+
+`.gitattributes` marks Unity YAML files (`*.unity`, `*.prefab`, `*.asset`, …) with `merge=unityyamlmerge`. Git only uses Unity's smart merge tool if each machine defines that driver; otherwise it silently falls back to a plain text merge. Point it at the installed Editor (adjust the version and path):
+
+```bash
+git config merge.unityyamlmerge.name "Unity SmartMerge (UnityYAMLMerge)"
+git config merge.unityyamlmerge.driver "'C:/Program Files/Unity/Hub/Editor/<version>/Editor/Data/Tools/UnityYAMLMerge.exe' merge -h -p --force %O %B %A %A"
+git config merge.unityyamlmerge.recursive binary
+```
+
+On macOS the tool is at `/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/Tools/UnityYAMLMerge`. Smart merge reduces scene conflicts but does not remove them — scenes stay main-only (§3).
 
 ## 3. Parallel work (main + sub-agents)
 

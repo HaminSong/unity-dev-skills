@@ -1,11 +1,11 @@
 ---
 name: ship-to-develop
-description: Commits the current task, merges it into develop and pushes develop, staging only the files this task changed. Use when the user says "commit", "merge into develop", "push", "ship it" or similar in this repository.
+description: Finishes a task in this repository by committing it on a feat/ branch, merging into develop and, with separate confirmation, pushing develop — staging only the files this task changed. Use when the user asks to ship, merge into develop or push this task, or types /ship-to-develop. A plain "commit" request is not enough to push.
 ---
 
-# ship-to-develop — sync → commit → merge into develop → push
+# ship-to-develop — sync → commit → merge into develop → (confirm) push
 
-The user asking for this is the approval to commit, merge and push. Follow the steps in order and stop to ask only where a step says so. The rules behind each step are in `docs/collaboration.md` §2.
+Asking for this skill approves committing and merging into the local `develop`. **Pushing is a separate approval**: unless the user's request explicitly said to push, stop before step 6's push and ask. If the user only asked to commit, stop after step 5. The rules behind each step are in `docs/collaboration.md` §2.
 
 ## 1. Choose what to stage
 
@@ -33,7 +33,8 @@ If any test fails, **do not commit**. Show the failures and stop.
 
 ## 4. Sync
 
-- `git fetch origin`. If `develop` is behind `origin/develop`, update first (`git pull --rebase origin develop` if you have unpushed commits).
+- Check for a remote with `git remote`. **If there is no `origin`**, skip syncing here and skip the push in step 6; say so in the report.
+- Otherwise `git fetch origin`. If local `develop` is behind `origin/develop`, update it before merging: `git checkout develop` then `git pull --rebase origin develop`, then return to your task branch.
 - On conflicts, do not resolve them on your own — show them and ask.
 
 ## 5. Commit
@@ -47,10 +48,12 @@ If any test fails, **do not commit**. Show the failures and stop.
 ```bash
 git checkout develop
 git merge feat/<name>
-git push origin develop
 git branch -d feat/<name>
+# only with the user's push approval and an origin remote:
+git push origin develop
 ```
 
+- Before pushing, confirm with the user unless their request already said "push". Show what will be pushed (`git log --oneline origin/develop..develop`).
 - On merge conflicts, do not resolve them alone: show the files and both sides, and mention that `git merge --abort` returns to the previous state.
 - Do not push the task branch. Do not touch `main`.
 - If `git checkout` is blocked by someone else's changes, do not stash them away — show which files and ask.
@@ -60,6 +63,6 @@ git branch -d feat/<name>
 
 Briefly:
 - Commit hash and title, number of files committed
-- Branch merged and push result
+- Branch merged, and whether develop was pushed (pushed / awaiting approval / no remote)
 - Test results (pass count if run, or why not run)
 - **Changes intentionally left unstaged**

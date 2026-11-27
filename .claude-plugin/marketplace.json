@@ -1,6 +1,6 @@
 {
   "name": "unity-dev-skills",
-  "description": "Claude Code skills for building Unity games with AI coding agents, starting with a one-pass setup that gives agents the structure and ground rules to work on their own.",
+  "description": "Agent skills for building Unity games with AI coding agents, starting with a one-pass setup that gives agents the structure and ground rules to work within.",
   "owner": {
     "name": "HaminSong"
   },

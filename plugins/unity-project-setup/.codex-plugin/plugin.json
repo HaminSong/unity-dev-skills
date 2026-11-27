@@ -1,0 +1,25 @@
+{
+  "name": "unity-project-setup",
+  "version": "0.1.0",
+  "description": "Prepares a Unity project for AI-agent-driven development: layered asmdefs the compiler enforces, standard folders, Editor-applied project settings, Unity git files, AGENTS.md with a docs/ set agents keep current, coding/commit/collaboration rules and a tested EventBus.",
+  "author": {
+    "name": "HaminSong"
+  },
+  "repository": "https://github.com/HaminSong/unity-dev-skills",
+  "license": "MIT",
+  "keywords": ["unity", "gamedev", "ai-agents", "agentic-coding", "project-setup", "asmdef", "architecture", "conventions"],
+  "skills": "./skills/",
+  "requires_local_executor": true,
+  "interface": {
+    "displayName": "Unity Project Setup",
+    "shortDescription": "Agent-ready Unity project setup",
+    "longDescription": "Lays layered assemblies, project settings, git files and agent-ready docs onto a new Unity project so AI agents can work on it within clear rules.",
+    "developerName": "HaminSong",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "defaultPrompt": [
+      "Set up this Unity project with folders, assemblies and coding rules.",
+      "Get this Unity project ready for AI agents to work on in parallel."
+    ]
+  }
+}

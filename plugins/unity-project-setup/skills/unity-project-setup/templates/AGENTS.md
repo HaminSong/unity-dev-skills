@@ -15,4 +15,4 @@
 
 ## Git
 
-- Commit, merge and push only when the user asks, following `.claude/skills/ship-to-develop`. Stage only the files changed by the current task.
+- Commit, merge and push only when the user asks, following `.claude/skills/ship-to-develop/SKILL.md` (any agent can follow it as a checklist). Pushing needs an explicit OK. Stage only the files changed by the current task.
