@@ -1,6 +1,6 @@
 {
   "name": "unity-dev-skills",
-  "description": "Claude Code skills for Unity game development, starting with a one-pass project setup: layered assemblies, project settings, git configuration and team conventions.",
+  "description": "Claude Code skills for building Unity games with AI coding agents, starting with a one-pass setup that gives agents the structure and ground rules to work on their own.",
   "owner": {
     "name": "HaminSong"
   },
@@ -8,7 +8,7 @@
     {
       "name": "unity-project-setup",
       "source": "./plugins/unity-project-setup",
-      "description": "Lays a layered asmdef architecture, standard folders, Editor-applied project settings, Unity git files, agent-ready docs, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill onto a new Unity project.",
+      "description": "Prepares a Unity project for AI-agent-driven development: layered asmdefs the compiler enforces, standard folders, Editor-applied project settings, Unity git files, AGENTS.md/CLAUDE.md with a docs/ set agents keep current, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill.",
       "version": "0.1.0",
       "category": "Developer Tools"
     }

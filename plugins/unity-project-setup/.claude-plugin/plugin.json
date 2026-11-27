@@ -1,11 +1,11 @@
 {
   "name": "unity-project-setup",
-  "description": "Lays a layered asmdef architecture, standard folders, Editor-applied project settings, Unity git files, agent-ready docs, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill onto a new Unity project.",
+  "description": "Prepares a Unity project for AI-agent-driven development: layered asmdefs the compiler enforces, standard folders, Editor-applied project settings, Unity git files, AGENTS.md/CLAUDE.md with a docs/ set agents keep current, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill.",
   "version": "0.1.0",
   "author": {
     "name": "HaminSong"
   },
   "repository": "https://github.com/HaminSong/unity-dev-skills",
   "license": "MIT",
-  "keywords": ["unity", "gamedev", "project-setup", "asmdef", "architecture", "conventions", "git", "editorconfig"]
+  "keywords": ["unity", "gamedev", "ai-agents", "agentic-coding", "project-setup", "asmdef", "architecture", "conventions", "git", "editorconfig"]
 }

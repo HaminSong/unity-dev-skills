@@ -5,21 +5,25 @@
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
 
-Claude Code skills for Unity game development.
+Claude Code skills for building Unity games with AI coding agents.
 
 | Plugin | What it does |
 |---|---|
-| [unity-project-setup](plugins/unity-project-setup/skills/unity-project-setup/SKILL.md) | Gives a new Unity project a layered architecture and a complete set of team rules in one pass |
+| [unity-project-setup](plugins/unity-project-setup/skills/unity-project-setup/SKILL.md) | Prepares a new Unity project so AI agents can build most of it: layered architecture, project settings and a written operating agreement, in one pass |
 
 ## unity-project-setup
 
-Most Unity projects acquire their structure and rules one incident at a time — after a 2,000-line controller, after a broken merge, after a test overwrites an open prefab — and end up with those rules scattered across chats and stale docs. This skill lays the whole set down on day one, as real files, so people and AI agents work from the same playbook. Every rule was added after a real incident on a shipped mobile game; the skill's [`why-these-rules.md`](plugins/unity-project-setup/skills/unity-project-setup/references/why-these-rules.md) records each one.
+**The groundwork and ground rules for handing a Unity project to AI agents.**
+
+Agents do good work when the repository tells them where code goes, what they must not touch, how to check their own work and how to hand off to the next session. They do poor work when those answers live only in someone's head. This skill writes those answers into the project on day one, as real files: folders and assemblies that the compiler enforces, settings applied through the Editor, and a `docs/` set that agents read first and keep current.
+
+The rules were not designed up front. Each one was added after a real incident on a shipped mobile game, built by one developer with several AI agents sharing the same repository and Unity Editor. The skill's [`why-these-rules.md`](plugins/unity-project-setup/skills/unity-project-setup/references/why-these-rules.md) records the incident behind each rule.
 
 Ask Claude something like:
 
-> Set up this Unity project — folders, assemblies, coding rules.
-> I just created an empty Unity project at `D:\Dev\Orbit`. Scaffold it with prefix `Orbit`, landscape.
-> Split this small project into assemblies and add commit rules.
+- *"Set up this Unity project — folders, assemblies, coding rules."*
+- *"I just created an empty Unity project at `D:\Dev\Orbit`. Scaffold it with prefix `Orbit`, landscape."*
+- *"Get this project ready for AI agents to work on in parallel."*
 
 Claude asks a handful of questions (prefix, names, orientation, optional layers), shows a dry run, then creates:
 
@@ -48,6 +52,40 @@ Highlights:
 - **Rules agents actually follow.** `AGENTS.md` (imported by `CLAUDE.md`) points every agent to concise docs: file-size limits, event rules, runtime-uGUI traps, how to share one Unity Editor between several agents, and what to never stage.
 - **Starter code with tests.** A typed, re-entrancy-safe `EventBus` with 8 EditMode tests and a composition-root skeleton.
 - **Never destructive.** Existing files are skipped and reported; `.meta` files are left to Unity; nothing is committed or pushed without confirmation.
+
+### How it lets agents work on their own
+
+Each piece the skill lays down answers a question an agent would otherwise have to guess at or ask about:
+
+| What an agent needs | What provides it |
+|---|---|
+| Where to start | `AGENTS.md` (imported by `CLAUDE.md`) points to the `docs/` index; agents open only the documents a task needs |
+| Where code goes | One folder = one layer assembly. Wrong-direction references fail to compile, so mistakes show up as compiler errors instead of review comments |
+| How to check its own work | Core is pure C#, so EditMode tests run headless. The rules require tests for every Core change, and "not verified" must be said out loud |
+| How to hand off between sessions | The docs are the handoff: before finishing, agents update the docs to the current state instead of writing separate notes |
+| How to work in parallel | A task brief template, one worktree per sub-task, a list of main-only files (scenes, composition root) and a file-overlap check before starting |
+| How to share one Unity Editor | Check Play state first, stop your own Play session, close Prefab Mode before tests, never call `AssetDatabase.SaveAssets()` |
+| How to commit safely | `ship-to-develop`: stage only your own files, sync first, test before committing, never force |
+| When to grow the structure | File-size limits and written growth triggers, so agents neither over-engineer nor let files bloat |
+
+The documents live outside `Assets/`, so Unity never imports them:
+
+```
+docs/
+  README.md               index, plus one line per design or research document (date, summary, status)
+  ARCHITECTURE_MAP.md     what the code looks like today: classes per layer, flows
+  architecture-design.md  why the layers are split this way, and when to grow the structure
+  coding-guidelines.md    coding rules, file-size limits, Unity pitfalls
+  collaboration.md        branches, commits, parallel work, sharing the Editor
+  tasks/TEMPLATE.md       brief for handing a task to another agent
+```
+
+They start as templates. Claude fills in only what it knows (a one-line game description, current contents), and the rules keep the docs current from then on:
+- `AGENTS.md` requires updating related docs before finishing a task.
+- `ship-to-develop` updates the docs and commits them together with the code.
+- `ARCHITECTURE_MAP.md` must change whenever a class is added or moved.
+
+**What it does not do:** make agents autonomous by itself. A person still decides what to build, reviews the work and releases to `main`. The skill makes the work between those decisions something agents can carry out reliably.
 
 ### Before you use it
 
