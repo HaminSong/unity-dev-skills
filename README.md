@@ -2,7 +2,7 @@
 
 [![scaffold CI](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml/badge.svg)](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.2.0-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
 
@@ -166,7 +166,7 @@ tests/scaffold.Tests.ps1                 scaffold checks, run by CI
 .github/workflows/scaffold.yml           CI: the checks on Ubuntu, macOS and Windows
 ```
 
-## Verification status (0.1.0)
+## Verification status (0.2.0)
 
 - **Automated (CI on every push):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) runs 50 checks on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1. The checks cover:
   - dry run and real run, then a re-run that skips everything
