@@ -21,11 +21,19 @@ Work through the steps in order. Steps 2 and 3 are deterministic and scripted; t
 
 - Confirm `ProjectSettings/ProjectVersion.txt` exists at the target path. If it does not, this is not a Unity project yet: offer to create one with `unity:new-unity-project` or Unity Hub, then come back.
 - If `Assets/Scripts` already contains code or `.asmdef` files, **do not scaffold over it**. The script never overwrites, but layering new assemblies over loose scripts can break compilation. Follow "Adopting in an existing project" in `references/setup-decisions.md` instead, and show the user the plan before moving anything.
+- If the project contains code without its own asmdef outside `Assets/Scripts` (Asset Store packages, `Plugins/`), warn that layer assemblies cannot reference `Assembly-CSharp` or `Assembly-CSharp-firstpass`. Code that needs those assets will only compile after they get an asmdef.
 - If the Unity Editor has this project open, new files trigger a recompile. That is fine, but if it is in Play Mode, wait until it stops — never edit scripts during Play.
 
 ### Step 1 — Ask once, with defaults
 
 Ask only these, in a single round (use a multiple-choice question tool such as `AskUserQuestion` if available). If the user says "just use defaults", use the defaults without asking again.
+
+Along with the questions, tell the user in two or three lines what they are agreeing to:
+- The full folder tree and one asmdef per layer are always created, even if empty.
+- Apply Defaults switches to Input System only, Linear color space and Domain Reload off.
+- `.gitattributes` routes binaries through Git LFS.
+
+If one of these is a problem (legacy `UnityEngine.Input` code, art tuned for Gamma, no LFS), settle it now rather than after the scaffold. Either skip that piece or plan to edit it afterwards.
 
 | Setting | Default | Why it matters |
 |---|---|---|
