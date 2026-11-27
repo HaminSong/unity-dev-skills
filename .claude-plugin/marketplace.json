@@ -1,0 +1,16 @@
+{
+  "name": "unity-dev-skills",
+  "description": "Claude Code skills for Unity game development, starting with a one-pass project setup: layered assemblies, project settings, git configuration and team conventions.",
+  "owner": {
+    "name": "HaminSong"
+  },
+  "plugins": [
+    {
+      "name": "unity-project-setup",
+      "source": "./plugins/unity-project-setup",
+      "description": "Lays a layered asmdef architecture, standard folders, Editor-applied project settings, Unity git files, agent-ready docs, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill onto a new Unity project.",
+      "version": "1.0.0",
+      "category": "Developer Tools"
+    }
+  ]
+}
