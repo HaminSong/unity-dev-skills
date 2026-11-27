@@ -10,7 +10,8 @@ namespace {{PREFIX}}.Core
     /// </summary>
     /// <remarks>
     /// Publish does not allocate: it walks the handler list in place. Unsubscribing during a publish blanks the entry and the
-    /// list is compacted after the outermost publish returns. Subscriptions added during a publish are not called until the next one.
+    /// list is compacted after the outermost publish returns. Subscriptions added during a publish are not called by that publish;
+    /// a nested publish started from a handler reads the list afresh and does call them.
     /// </remarks>
     public sealed class EventBus : IEventBus
     {
@@ -23,7 +24,7 @@ namespace {{PREFIX}}.Core
                 return;
 
             var entries = list.Entries;
-            var count = entries.Count; // fixed up front: handlers subscribed during this publish wait for the next one
+            var count = entries.Count; // fixed up front: handlers subscribed during this publish are not called by it
             list.PublishDepth++;
             try
             {

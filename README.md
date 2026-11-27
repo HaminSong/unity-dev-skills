@@ -173,7 +173,7 @@ tests/scaffold.Tests.ps1                 scaffold checks, run by CI
   - folders, asmdefs and reference rules
   - layer removal, URP off and fast Play Mode
   - missing-package warnings, invalid input and a non-Unity folder
-- **Run by the author, not automated:** end-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0): in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
+- **Run by the author, not automated:** end-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
   - all generated code compiles; scripts placed in a layer folder compile into that layer's assembly (none fall into `Assembly-CSharp`)
   - **Tools > Project Setup > Apply Defaults** runs and every setting is saved to `ProjectSettings/`. Without `-FastPlayMode` the Enter Play Mode settings are left untouched; with it, Domain Reload is turned off
   - the 13 EditMode tests pass through the Unity Test Runner. The no-GC-allocation check on Publish was confirmed to fail when Publish allocates
