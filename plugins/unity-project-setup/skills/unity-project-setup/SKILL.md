@@ -20,7 +20,10 @@ Work through the steps in order. Steps 2 and 3 are deterministic and scripted; t
 ### Step 0 — Preflight
 
 - Confirm `ProjectSettings/ProjectVersion.txt` exists at the target path. If it does not, this is not a Unity project yet: offer to create one with `unity:new-unity-project` or Unity Hub, then come back.
-- If `Assets/Scripts` already contains code or `.asmdef` files, **do not scaffold over it**. The script never overwrites, but layering new assemblies over loose scripts can break compilation. Follow "Adopting in an existing project" in `references/setup-decisions.md` instead, and show the user the plan before moving anything.
+- If the project already has scripts, check whether any of the layer folders (`Assets/Scripts/Core`, `Data`, `Gameplay`, `UI`, `Persistence`, `Bootstrap`, `Editor`) already exist.
+  - **None exist:** the scaffold is safe. New asmdefs only capture their own new folders. Existing scripts stay in `Assembly-CSharp`, and keep compiling there, because the layer assemblies are auto-referenced. Tell the user that existing code is not moved. Moving it is a separate, later step: "Adopting in an existing project" in `references/setup-decisions.md`.
+  - **Any exists and holds code or an `.asmdef`:** do not scaffold over it. An asmdef would capture those scripts and can break compilation. Follow the adoption steps instead, and show the user the plan before moving anything.
+- If the repository already has `.gitattributes` or `.gitignore`, the scaffold skips them. Offer to merge in the Unity entries (LFS, UnityYAMLMerge, `Library/`) rather than leaving them silently unchanged.
 - If the project contains code without its own asmdef outside `Assets/Scripts` (Asset Store packages, `Plugins/`), warn that layer assemblies cannot reference `Assembly-CSharp` or `Assembly-CSharp-firstpass`. Code that needs those assets will only compile after they get an asmdef.
 - If the Unity Editor has this project open, new files trigger a recompile. That is fine, but if it is in Play Mode, wait until it stops — never edit scripts during Play.
 
@@ -85,8 +88,8 @@ What the script lays down:
 
 Settings are applied through the Editor API rather than by copying `ProjectSettings/*.asset`. Those files change format between Unity versions; copying them from another project corrupts settings or is silently ignored.
 
-1. Let Unity compile the new files (focus the Editor, or `unity-cli`'s `editor refresh`). Check the Console has zero errors.
-2. Run **Tools > Project Setup > Apply Defaults** (with `unity-cli`: `editor invoke_menu "Tools/Project Setup/Apply Defaults"`). It is idempotent and sets:
+1. Let Unity compile the new files: focus the Editor, or press Ctrl+R / Cmd+R to refresh. Check the Console has zero errors; the new **Tools** menu appearing is a quick sign the Editor assembly compiled. The `unity` CLI can also recompile a running Editor, but only once the project has the Unity Pipeline package.
+2. Run **Tools > Project Setup > Apply Defaults**. It is idempotent and sets:
    - Asset Serialization: Force Text; Version Control: Visible Meta Files
    - Color Space: Linear; product/company name; default orientation
    - Active Input Handling: Input System only

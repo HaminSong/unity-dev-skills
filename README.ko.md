@@ -37,6 +37,10 @@ AI 코딩 에이전트와 함께 Unity 게임을 만들기 위한 에이전트 �
 
 규칙마다 어떤 일이 있었는지는 [`why-these-rules.md`](plugins/unity-project-setup/skills/unity-project-setup/references/why-these-rules.md)에 정리되어 있습니다(영어).
 
+![Unity 6 프로젝트에서 스캐폴드 실행: 레이어 폴더가 생기고, Tools > Project Setup > Apply Defaults가 실행된 뒤, Gameplay를 참조한 UI 스크립트가 CS0234로 컴파일되지 않는 장면](media/demo.gif)
+
+*실행 중인 Unity 6.3 에디터에서 기존 프로젝트에 적용하며 녹화했습니다. 레이어 폴더가 생기고 Apply Defaults가 실행된 뒤, Gameplay를 참조한 UI 스크립트를 컴파일러가 막습니다.*
+
 ### 이렇게 요청하면 됩니다
 
 - *"이 Unity 프로젝트 세팅해 줘 — 폴더, 어셈블리, 코딩 규칙까지."*
@@ -119,18 +123,23 @@ Unity 공식 [`unity:new-unity-project`](https://github.com/Unity-Technologies/u
 
 ## 검증 상태 (0.2.0)
 
-- **자동(CI, push마다):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1)의 검사 50개를 PowerShell 7(Ubuntu, macOS, Windows)과 Windows PowerShell 5.1에서 실행합니다.
+- **자동(CI, `main` push와 PR마다):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1)의 검사 50개를 PowerShell 7(Ubuntu, macOS, Windows)과 Windows PowerShell 5.1에서 실행합니다.
 - **작성자가 직접 실행(Unity 6000.3.28f1, 배치 모드):**
   - 생성된 코드가 컴파일되고, 스크립트가 폴더에 맞는 어셈블리로 들어갑니다.
   - Apply Defaults가 설정을 적용하고 저장합니다. Input System 패키지가 없으면 입력 설정을 건드리지 않습니다.
   - EditMode 테스트 13/13 통과. 이 중 Publish 메모리 할당 검사는 실제로 할당이 생기면 실패하는 것까지 확인했습니다.
   - 금지된 참조는 컴파일 오류가 납니다: Core → UnityEngine(`CS0246`), UI → Gameplay(`CS0234`).
   - git 단계: `main` 먼저 커밋 후 `develop`, 전역 설정을 바꾸지 않는 LFS, UnityYAMLMerge 병합, 원격 없는 `ship-to-develop` 순서
+- **실행 중인 에디터, 기존 프로젝트(작성자가 직접 실행):** 설치한 플러그인을 에이전트가 스크립트 23개와 커밋 안 된 작업이 있는 Unity 6.3 프로젝트에 적용했습니다.
+  - 레이어 어셈블리는 기존 코드 옆에 추가됐고, 기존 코드는 `Assembly-CSharp`에 그대로 남아 컴파일됐습니다.
+  - Tools 메뉴에서 Apply Defaults가 실행됐습니다.
+  - Test Runner에서 13/13 통과했습니다.
+  - `CS0234` 위반이 Console에 떴습니다(위 GIF).
+  - `ship-to-develop`을 따라 커밋했습니다. 작업 중이던 파일은 담지 않고, `feat/` 브랜치에서 커밋해 `develop`에 병합한 뒤, **push 전에 멈추고 승인을 요청**했습니다.
 - **아직 확인하지 않은 것:**
   - CI에서 Unity 컴파일과 테스트
   - Claude Code 외 에이전트에 설치
-  - 에이전트가 직접 `ship-to-develop`을 실행하는 흐름
-  - 스크립트가 많은 기존 프로젝트에 도입
+  - 기존 프로젝트의 스크립트를 레이어로 옮기기(`setup-decisions.md`의 도입 절차)
 
 ## 라이선스
 

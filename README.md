@@ -22,6 +22,10 @@ Agents do better work when the repository tells them where code goes, what they 
 
 The rules were not designed up front. Each was added after a real incident on a mobile game in development, built by one developer with several AI agents sharing the same repository and Unity Editor. [`why-these-rules.md`](plugins/unity-project-setup/skills/unity-project-setup/references/why-these-rules.md) records the incident behind each rule.
 
+![The scaffold running in a Unity 6 project: layer folders appear, Tools > Project Setup > Apply Defaults runs, then a UI script that references Gameplay fails to compile with CS0234](media/demo.gif)
+
+*Recorded in a live Unity 6.3 Editor on an existing project. The layer folders appear, Apply Defaults runs, then a UI script that reaches into Gameplay is stopped by the compiler.*
+
 Ask your agent something like:
 
 - *"Set up this Unity project — folders, assemblies, coding rules."*
@@ -105,13 +109,17 @@ Each piece the skill lays down answers a question an agent would otherwise have 
 |---|---|
 | How an idea becomes a change | `docs/workflow.md`: proposal first, the user decides, then plan, implement, verify and update docs. Plans and research have fixed folders, names and status headers |
 | Where to start | `AGENTS.md` (imported by `CLAUDE.md`) points to the `docs/` index; agents open only the documents a task needs |
-| Where code goes | One folder = one layer assembly. Wrong-direction references fail to compile, so mistakes show up as compiler errors instead of review comments |
+| Where code goes | One folder = one layer assembly. Wrong-direction references fail to compile, so mistakes show up as compiler errors instead of review comments (see the screenshot below) |
 | How to check its own work | Core is pure C#, so EditMode tests run headless. The rules require tests for every Core change, and "not verified" must be said out loud |
 | How to hand off between sessions | The docs are the handoff: before finishing, agents update the docs to the current state instead of writing separate notes |
 | How to work in parallel | A task brief template, one worktree per sub-task, a list of main-only files (scenes, composition root) and a file-overlap check before starting |
 | How to share one Unity Editor | Check Play state first, stop your own Play session, close Prefab Mode before tests, never call `AssetDatabase.SaveAssets()` |
 | How to commit safely | `ship-to-develop`: stage only your own files, sync first, test before committing, push only with an explicit OK, never force |
 | When to grow the structure | File-size limits and written growth triggers, so agents neither over-engineer nor let files bloat |
+
+![Unity Console: error CS0234, the namespace 'Gameplay' does not exist in 'Starfall', raised by a UI script that references a Gameplay type](media/layer-violation.jpg)
+
+*A UI script that references Gameplay doesn't compile, because the UI assembly has no reference to Gameplay.*
 
 The documents live outside `Assets/`, so Unity never imports them:
 
@@ -171,7 +179,7 @@ tests/scaffold.Tests.ps1                 scaffold checks, run by CI
 
 ## Verification status (0.2.0)
 
-- **Automated (CI on every push):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) runs 50 checks on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1. The checks cover:
+- **Automated (CI on every push to `main` and every pull request):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) runs 50 checks on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1. The checks cover:
   - dry run and real run, then a re-run that skips everything
   - folders, asmdefs and reference rules
   - layer removal, URP off and fast Play Mode
@@ -189,11 +197,18 @@ tests/scaffold.Tests.ps1                 scaffold checks, run by CI
   - with the merge driver from `docs/collaboration.md` §2a configured, git invokes UnityYAMLMerge and combines edits to two different fields of a settings asset
   - the `ship-to-develop` git sequence with no remote: `feat/` commit → merge into `develop` → branch deleted, no push
 - **Install:** installing as a Claude Code plugin from this repository, which registers one skill.
+- **Live Editor, existing project (run by the author):** the installed plugin was used by an agent on an existing Unity 6.3 project with 23 scripts and uncommitted work in progress, in the open Editor:
+  - Layer assemblies were added beside the existing code. That code stayed in `Assembly-CSharp` and still compiled.
+  - Apply Defaults ran from the **Tools** menu.
+  - 13/13 tests passed in the Test Runner.
+  - The `CS0234` violation appeared in the Console (above).
+  - Following `ship-to-develop`, the agent staged only the setup files, leaving the work in progress untouched. It committed on a `feat/` branch, merged into `develop`, and **stopped before pushing** to ask.
+
+  ![Unity Test Runner: 13 EventBus tests passing](media/test-runner.jpg)
 - **Not yet verified:**
   - Unity compile and tests in CI (these run only on the author's machine today)
   - installing on agents other than Claude Code
-  - `ship-to-develop` driven by an agent, including the push confirmation
-  - adopting the structure in an existing project with many scripts
+  - moving an existing project's scripts into the layers (the adoption steps in `setup-decisions.md`)
 
 ## License
 

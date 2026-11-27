@@ -34,12 +34,13 @@ If any test fails, **do not commit**. Show the failures and stop.
 ## 4. Sync
 
 - Check for a remote with `git remote`. **If there is no `origin`**, skip syncing here and skip the push in step 6; say so in the report.
+- **If there is no `develop` branch** (neither local nor `origin/develop`), tell the user and offer to create it locally from `main`. Creating it on the remote happens only with the push approval in step 6.
 - Otherwise `git fetch origin`. If local `develop` is behind `origin/develop`, update it before merging: `git checkout develop` then `git pull --rebase origin develop`, then return to your task branch.
 - On conflicts, do not resolve them on your own — show them and ask.
 
 ## 5. Commit
 
-- If the current branch is `develop`, create `feat/<short-name>` and commit there.
+- Commit on a `feat/<short-name>` branch. If you are on `develop` or `main`, create the branch from `develop` first.
 - Message: title `feat|fix|refactor|docs|chore|test(scope): …` describing what changed and how (reason or condition in parentheses). Body: `- ` lines with what changed and numbers (before → after), and how it was verified. End with any attribution trailer your environment requires.
 - Never skip hooks (`--no-verify`).
 
