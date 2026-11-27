@@ -1,5 +1,6 @@
 # unity-dev-skills
 
+[![scaffold CI](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml/badge.svg)](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
