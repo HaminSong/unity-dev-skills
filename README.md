@@ -168,11 +168,21 @@ plugins/unity-project-setup/
 - `scaffold.ps1` (Windows PowerShell 5.1): fresh run, re-run (everything skipped), layer removal, URP off, missing-package warnings, invalid prefix/layer/orientation, non-Unity folder.
 - End-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
   - all generated code compiles; scripts placed in a layer folder compile into that layer's assembly (none fall into `Assembly-CSharp`)
-  - **Tools > Project Setup > Apply Defaults** runs and every setting is saved to `ProjectSettings/`
+  - **Tools > Project Setup > Apply Defaults** runs and every setting is saved to `ProjectSettings/`. Without `-FastPlayMode` the Enter Play Mode settings are left untouched; with it, Domain Reload is turned off
   - the 8 EditMode tests pass through the Unity Test Runner
   - forbidden references fail to compile: Core → UnityEngine (`CS0246`) and UI → Gameplay (`CS0234`)
+- Git steps on the generated project:
+  - `git init -b main`, first commit on `main`, then `develop` on the same commit
+  - `git lfs install --local` leaves the global git config unchanged
+  - `.gitignore` excludes `Library/`; images route through LFS
+  - with the merge driver from `docs/collaboration.md` §2a configured, git invokes UnityYAMLMerge and combines edits to two different fields of a settings asset
+  - the `ship-to-develop` git sequence with no remote: `feat/` commit → merge into `develop` → branch deleted, no push
 - These checks were run by the author and are not yet automated in this repository.
-- **Not yet verified:** `scaffold.ps1` under PowerShell 7 on macOS/Linux; installing on agents other than Claude Code; the git steps and `ship-to-develop` flow end to end; adopting the structure in an existing project with many scripts.
+- **Not yet verified:**
+  - `scaffold.ps1` under PowerShell 7 on macOS/Linux
+  - installing on agents other than Claude Code
+  - `ship-to-develop` driven by an agent, including the push confirmation
+  - adopting the structure in an existing project with many scripts
 
 ## License
 
