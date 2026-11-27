@@ -1,6 +1,7 @@
 # Agents working in this repository
 
 - **Before starting**, read `docs/README.md` (the docs index) and open only the documents the task needs. For code changes read `docs/coding-guidelines.md`; for git or parallel work read `docs/collaboration.md`.
+- **Design, look, balance or scope changes** follow `docs/workflow.md`: write a proposal first and do not change the game until the user decides.
 - **Before finishing**, update the related docs to match the new state (`docs/ARCHITECTURE_MAP.md` when the structure changes). Do not write separate handoff notes — the docs are the handoff.
 - **Leave alone** `Packages/`, fonts and third-party asset packs (`Assets/ThirdParty`) unless the task is about them. The user edits these often.
 - **Layer rules**: `{{PREFIX}}.Core` never references UnityEngine. UI and Gameplay never reference each other. Details in `docs/architecture-design.md`.

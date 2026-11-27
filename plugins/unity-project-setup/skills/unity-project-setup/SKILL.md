@@ -30,7 +30,7 @@ Ask only these, in a single round (use a multiple-choice question tool such as `
 
 Along with the questions, tell the user in two or three lines what they are agreeing to:
 - The full folder tree and one asmdef per layer are always created, even if empty.
-- Apply Defaults switches to Input System only, Linear color space and Domain Reload off.
+- Apply Defaults switches to Input System only and Linear color space.
 - `.gitattributes` routes binaries through Git LFS.
 
 If one of these is a problem (legacy `UnityEngine.Input` code, art tuned for Gamma, no LFS), settle it now rather than after the scaffold. Either skip that piece or plan to edit it afterwards.
@@ -42,6 +42,7 @@ If one of these is a problem (legacy `UnityEngine.Input` code, art tuned for Gam
 | Screen orientation | `Portrait` | `Landscape` for PC/console or landscape mobile; `AutoRotation` if both. |
 | Layers to leave out | None | Only `Data`, `UI` and `Persistence` are optional. See `references/setup-decisions.md` before dropping any — when unsure, keep them. |
 | Render pipeline | Whatever is installed | If URP is in the manifest, Gameplay, UI and Editor reference the URP runtime assemblies. |
+| Fast Enter Play Mode | Off (Unity default) | Opt-in with `-FastPlayMode`: Play starts almost instantly because Domain Reload is skipped, but static fields keep values between Play sessions. Offer it; never turn it on without a yes. |
 
 ### Step 2 — Scaffold with `scripts/scaffold.ps1`
 
@@ -61,6 +62,7 @@ pwsh -File "<skill dir>/scripts/scaffold.ps1" -ProjectPath "<project>" -Prefix G
 Options:
 
 - `-Skip "Persistence,UI"` drops optional layers. They are removed from other asmdefs' references and from the tables and diagram in the generated docs. Prose mentions are not rewritten — fix those in Step 5.
+- `-FastPlayMode` makes Apply Defaults turn Domain Reload off. Pass it only if the user said yes in Step 1.
 - `-Urp false` omits URP references even when URP is installed (default: auto-detect from `Packages/manifest.json`).
 - Existing files are reported as `SKIP` and left untouched. `.meta` files are never written — Unity generates them.
 - `WARN` lines mean a package is missing. Input System and Test Framework matter: the rules mandate Input System, and the test assembly will not compile without Test Framework. Offer to install them (via `unity:unity-package-management` if available) rather than editing `manifest.json` by hand.
@@ -76,7 +78,7 @@ What the script lays down:
 | `Assets/Scripts/Bootstrap/` | `GameBootstrapper` composition root skeleton |
 | `Assets/Scripts/Editor/ProjectSetup/` | `ApplyProjectSettings` (run in Step 3) |
 | Project root | `.gitattributes`, `.gitignore`, `.editorconfig`, `AGENTS.md`, `CLAUDE.md` |
-| `docs/` | `README.md` (index), `ARCHITECTURE_MAP.md`, `architecture-design.md`, `coding-guidelines.md`, `collaboration.md`, `tasks/TEMPLATE.md` |
+| `docs/` | `README.md` (index), `ARCHITECTURE_MAP.md`, `architecture-design.md`, `coding-guidelines.md`, `collaboration.md`, `workflow.md` (idea → proposal → decision → plan → change, where documents go), `tasks/TEMPLATE.md` |
 | `.claude/skills/ship-to-develop/` | Project skill: sync → commit → merge to `develop` → push only with a separate OK |
 
 ### Step 3 — Apply project settings inside Unity
@@ -88,7 +90,7 @@ Settings are applied through the Editor API rather than by copying `ProjectSetti
    - Asset Serialization: Force Text; Version Control: Visible Meta Files
    - Color Space: Linear; product/company name; default orientation
    - Active Input Handling: Input System only
-   - Enter Play Mode Options on, Domain Reload off, Scene Reload on. This pairs with the coding rule "reset mutable statics on Play" in `coding-guidelines.md` — the two only work together.
+   - Only with `-FastPlayMode`: Enter Play Mode Options on, Domain Reload off, Scene Reload on. Without it, Enter Play Mode settings are left untouched. The coding rule "reset mutable statics on Play" in `coding-guidelines.md` applies either way, so the project can switch later without new bugs.
 3. Switching Active Input Handling needs an **Editor restart**. Ask the user to restart; do not quit their Editor yourself.
 4. Run the `<Prefix>.Core.Tests` EditMode tests and confirm all 8 pass. Close any open Prefab Mode stage first — a test run can write a stale copy over an open prefab.
 

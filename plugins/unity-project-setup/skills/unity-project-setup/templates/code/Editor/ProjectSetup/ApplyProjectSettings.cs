@@ -15,8 +15,10 @@ namespace {{PREFIX}}.Editor.ProjectSetup
         private const string CompanyName = "{{COMPANY}}";
         private const UIOrientation Orientation = UIOrientation.{{ORIENTATION}};
 
-        // Enter Play Mode: Domain Reload off (fast Play). In exchange, mutable statics are reset on Play (docs/coding-guidelines.md section 3).
-        private static readonly bool DisableDomainReload = true;
+        // Fast Enter Play Mode (Domain Reload off) is opt-in. When true, Play starts almost instantly, but static fields keep their
+        // values between Play sessions, so mutable statics must be reset on Play (docs/coding-guidelines.md section 3).
+        // When false, the Enter Play Mode settings are left as they are (Unity's default reloads the domain on every Play).
+        private static readonly bool DisableDomainReload = {{DISABLE_DOMAIN_RELOAD}};
 
         /// <summary>Applies every default and logs one Console line per changed group.</summary>
         [MenuItem("Tools/Project Setup/Apply Defaults")]
@@ -43,9 +45,15 @@ namespace {{PREFIX}}.Editor.ProjectSetup
             Log("Done — use File > Save Project to write the settings files.");
         }
 
-        /// <summary>Enables Enter Play Mode Options with only Domain Reload disabled (Scene Reload stays on). Set via serialized properties because the API name differs across versions.</summary>
+        /// <summary>Only when fast Play Mode was chosen: enables Enter Play Mode Options with Domain Reload disabled (Scene Reload stays on). Set via serialized properties because the API name differs across versions.</summary>
         private static void SetEnterPlayMode()
         {
+            if (!DisableDomainReload)
+            {
+                Log("Enter Play Mode = left unchanged (fast Play Mode not requested)");
+                return;
+            }
+
             var asset = GetSettingsAsset("ProjectSettings/EditorSettings.asset");
             if (asset == null)
             {
@@ -62,10 +70,10 @@ namespace {{PREFIX}}.Editor.ProjectSetup
                 return;
             }
 
-            enabled.boolValue = DisableDomainReload;
-            options.intValue = DisableDomainReload ? (int)EnterPlayModeOptions.DisableDomainReload : (int)EnterPlayModeOptions.None;
+            enabled.boolValue = true;
+            options.intValue = (int)EnterPlayModeOptions.DisableDomainReload;
             so.ApplyModifiedPropertiesWithoutUndo();
-            Log(DisableDomainReload ? "Enter Play Mode = Domain Reload off, Scene Reload on" : "Enter Play Mode = default (both reload)");
+            Log("Enter Play Mode = Domain Reload off, Scene Reload on");
         }
 
         /// <summary>Sets Active Input Handling to Input System only (1). There is no public API, so a serialized property is used. Returns true if it changed.</summary>

@@ -39,7 +39,7 @@ Assets/
     Persistence/     Game.Persistence save I/O
     Bootstrap/       Game.Bootstrap   composition root (no singletons)
     Editor/          Game.Editor      Tools > Project Setup > Apply Defaults
-docs/                index, architecture map, design + SOLID, coding rules, collaboration, task brief template
+docs/                index, architecture map, design + SOLID, coding rules, collaboration, workflow, task brief template
 .claude/skills/ship-to-develop/       commit → merge to develop → push only after a separate OK
 AGENTS.md  CLAUDE.md  .editorconfig  .gitattributes  .gitignore
 ```
@@ -87,7 +87,7 @@ The skill is built for a **new or nearly empty** project. It changes how your co
 - **Apply Defaults changes Editor behaviour project-wide.**
   - **Input System only** — any code or asset that uses legacy `UnityEngine.Input` or `StandaloneInputModule` throws at runtime. Needs an Editor restart.
   - **Linear color space** — existing art and UI colors will look different than in Gamma.
-  - **Domain Reload off** — static fields keep their values between Play sessions. Your code must reset mutable statics (the generated rules show how), and some third-party assets assume Domain Reload is on. Turn it back on in Project Settings > Editor if that causes problems.
+  - **Fast Enter Play Mode is opt-in.** Domain Reload stays on (Unity's default) unless you choose fast Play Mode. If you do, static fields keep their values between Play sessions; the generated rules show how to reset them, and some third-party assets assume Domain Reload is on.
 - **Git conventions are opinionated.**
   - `.gitattributes` routes binaries through **Git LFS**, so every collaborator needs Git LFS and your host's LFS quota applies. The skill runs `git lfs install --local`, which changes only this repository's config.
   - Scenes and prefabs are marked for Unity's smart merge (UnityYAMLMerge). Each machine must define the merge driver once, as described in the generated `docs/collaboration.md` §2a; until then git falls back to a plain text merge.
@@ -100,6 +100,7 @@ Each piece the skill lays down answers a question an agent would otherwise have 
 
 | What an agent needs | What provides it |
 |---|---|
+| How an idea becomes a change | `docs/workflow.md`: proposal first, the user decides, then plan, implement, verify and update docs. Plans and research have fixed folders, names and status headers |
 | Where to start | `AGENTS.md` (imported by `CLAUDE.md`) points to the `docs/` index; agents open only the documents a task needs |
 | Where code goes | One folder = one layer assembly. Wrong-direction references fail to compile, so mistakes show up as compiler errors instead of review comments |
 | How to check its own work | Core is pure C#, so EditMode tests run headless. The rules require tests for every Core change, and "not verified" must be said out loud |
@@ -118,8 +119,12 @@ docs/
   architecture-design.md  why the layers are split this way, and when to grow the structure
   coding-guidelines.md    coding rules, file-size limits, Unity pitfalls
   collaboration.md        branches, commits, smart merge setup, parallel work, sharing the Editor
+  workflow.md             idea → proposal → user decision → plan → change; where documents go; index rules
   tasks/TEMPLATE.md       brief for handing a task to another agent
+  intent/  research/  archive/   created when first needed: dated plans, research folders, finished documents
 ```
+
+`workflow.md` sets the rule at the center of handing work to agents: **a proposal never changes the game until the user decides.** Every plan and research document carries a status header (proposal → decided → in progress → applied, or rejected/superseded). The index stays one short line per document, grouped into Reference, Active and Recently applied.
 
 They start as templates. The agent fills in only what it knows (a one-line game description, current contents), and the rules ask agents to keep the docs current from then on:
 - `AGENTS.md` requires updating related docs before finishing a task.
@@ -130,7 +135,7 @@ They start as templates. The agent fills in only what it knows (a one-line game 
 
 ### Other details
 
-- **Settings applied through the Editor API.** Force Text, Visible Meta Files, Linear, orientation, Input System only and Domain Reload off are applied by an Editor menu. `ProjectSettings/*.asset` files are never copied, because their format changes between Unity versions.
+- **Settings applied through the Editor API.** Force Text, Visible Meta Files, Linear, orientation, Input System only and, if chosen, fast Enter Play Mode are applied by an Editor menu. `ProjectSettings/*.asset` files are never copied, because their format changes between Unity versions.
 - **Starter code with tests.** A synchronous `EventBus` (subscribing or disposing during a publish is safe and takes effect from the next publish) with 8 EditMode tests, plus a composition-root skeleton.
 - **`.editorconfig` naming rules** that match the coding guidelines (`_camelCase` fields, `s_` statics, `I` interfaces).
 

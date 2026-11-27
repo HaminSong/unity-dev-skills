@@ -30,7 +30,7 @@
   2. `AddComponent<Button>()` does not set `targetGraphic` — assign it yourself.
   3. A `Button`'s ColorTint overwrites `Image.color` as soon as it is active — put background colors in the `ColorBlock`.
 - **Values serialized in scenes and prefabs beat code defaults.** Changing a field initializer does not affect scenes that already saved the field.
-- **Domain Reload is off.** Any mutable static field (state, not a cache) needs a reset method that runs when Play starts:
+- **Write code that survives Domain Reload being off.** Fast Enter Play Mode may be on in this project (Project Settings > Editor > Enter Play Mode Settings), and then static fields keep their values between Play sessions. Any mutable static field (state, not a cache) gets a reset method that runs when Play starts — harmless when Domain Reload is on:
   ```csharp
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
   private static void ResetStatics() { s_instance = null; }

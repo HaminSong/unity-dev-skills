@@ -17,6 +17,8 @@
   Optional layers to leave out: Data, UI, Persistence (comma-separated or array).
 .PARAMETER Urp
   true/false to force URP references on or off. Omit to auto-detect from Packages/manifest.json.
+.PARAMETER FastPlayMode
+  Opt in to fast Enter Play Mode: Apply Defaults turns Domain Reload off. Omit to keep Unity's default (reload on every Play).
 .PARAMETER DryRun
   Print what would be created without writing anything.
 
@@ -31,6 +33,7 @@ param(
     [string]$Orientation = "Portrait",
     [string[]]$Skip = @(),
     [object]$Urp = $null,
+    [switch]$FastPlayMode,
     [switch]$DryRun
 )
 
@@ -158,7 +161,7 @@ function Write-NewFile([string]$path, [string]$content) {
 
 $today = Get-Date -Format "yyyy-MM-dd"
 function Fill([string]$text) {
-    return $text.Replace("{{PREFIX}}", $Prefix).Replace("{{PRODUCT}}", $Product).Replace("{{COMPANY}}", $Company).Replace("{{ORIENTATION}}", $Orientation).Replace("{{DATE}}", $today)
+    return $text.Replace("{{PREFIX}}", $Prefix).Replace("{{PRODUCT}}", $Product).Replace("{{COMPANY}}", $Company).Replace("{{ORIENTATION}}", $Orientation).Replace("{{DATE}}", $today).Replace("{{DISABLE_DOMAIN_RELOAD}}", $(if ($FastPlayMode) { "true" } else { "false" }))
 }
 
 # Remove table rows / mermaid lines that mention a skipped layer (docs only).
@@ -183,7 +186,7 @@ function Strip-Skipped([string]$text) {
 if ($DryRun) { Write-Output "[dry run] nothing is written" }
 Write-Output "Project : $ProjectPath"
 Write-Output "Prefix  : $Prefix   Product: $Product   Company: $Company   Orientation: $Orientation"
-Write-Output "URP     : $useUrp   Skip: $(if ($Skip.Count) { $Skip -join ', ' } else { '(none)' })"
+Write-Output "URP     : $useUrp   Skip: $(if ($Skip.Count) { $Skip -join ', ' } else { '(none)' })   Fast Play Mode: $([bool]$FastPlayMode)"
 Write-Output ""
 
 # ---------- 1. asset folders ----------
