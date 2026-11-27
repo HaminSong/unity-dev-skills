@@ -19,7 +19,7 @@ Read this when the user asks why a rule exists or wants to change one. Every rul
 
 - **Serialized scene values beat code defaults.** Changing a field initializer had no visible effect, repeatedly, because the scene had already serialized the old value.
 - **Three runtime-uGUI traps** — no `EventSystem` means no clicks; `AddComponent<Button>()` leaves `targetGraphic` empty; ColorTint overwrites `Image.color`. All three were hit for real.
-- **Domain Reload off + reset statics.** Entering Play Mode became much faster, but static state left over from the previous session caused bugs such as the loading screen not appearing. The two rules ship as a pair.
+- **Domain Reload off + reset statics.** Entering Play Mode became much faster, but static state left over from the previous session caused bugs such as the loading screen not appearing. Fast Play Mode is therefore opt-in (`-FastPlayMode`), while the "reset mutable statics on Play" rule ships either way, so a project can switch later without new bugs.
 - **No script edits during Play, no tests with a prefab open, no `AssetDatabase.SaveAssets()` from tools** — respectively: Play state got tangled; a test run wrote a stale prefab over the open one; an agent's save overwrote a font atlas the user was editing.
 - **Never modify ScriptableObject catalog values from code during Play.** Asset values persist in memory after Play stops, which skewed the user's next play session. Test on an `Instantiate`d copy.
 

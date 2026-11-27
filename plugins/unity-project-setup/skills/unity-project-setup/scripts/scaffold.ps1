@@ -43,7 +43,7 @@ $skillRoot = Split-Path -Parent $PSScriptRoot
 $templates = Join-Path $skillRoot "templates"
 
 # ---------- validate ----------
-$ProjectPath = (Resolve-Path -LiteralPath $ProjectPath).Path
+$ProjectPath = (Resolve-Path -LiteralPath $ProjectPath).Path.TrimEnd('\', '/') # a trailing separator would cut the first letter off every reported path
 if (-not (Test-Path -LiteralPath (Join-Path $ProjectPath "ProjectSettings/ProjectVersion.txt"))) {
     throw "Not a Unity project (ProjectSettings/ProjectVersion.txt missing): $ProjectPath"
 }
@@ -102,6 +102,22 @@ $layers = [ordered]@{
     "Core.Tests"  = @{ Dir = "Core/Tests/EditMode"; Refs = @("UnityEngine.TestRunner", "UnityEditor.TestRunner", "Core"); EditorOnly = $true; Test = $true }
 }
 $ourLayers = @($layers.Keys)
+
+# Refuse to drop a new asmdef onto existing code: it would pull those scripts into the layer and can break compilation.
+# A layer whose asmdef already exists (a re-run) is fine — that asmdef is skipped, not rewritten.
+$occupied = @()
+foreach ($name in $layers.Keys) {
+    if ($Skip -contains $name) { continue }
+    $dir = Join-Path (Join-Path $ProjectPath "Assets/Scripts") $layers[$name].Dir
+    if (-not (Test-Path -LiteralPath $dir)) { continue }
+    if (Test-Path -LiteralPath (Join-Path $dir "$Prefix.$name.asmdef")) { continue }
+    $existing = @(Get-ChildItem -LiteralPath $dir -Recurse -File -Include *.cs, *.asmdef, *.asmref -ErrorAction SilentlyContinue)
+    if ($existing.Count -gt 0) { $occupied += "Assets/Scripts/$($layers[$name].Dir) ($($existing.Count) script/assembly file(s))" }
+}
+if ($occupied.Count -gt 0) {
+    throw ("Layer folder(s) already contain code; a new asmdef would capture it and may break compilation:`n  " + ($occupied -join "`n  ") +
+        "`nFollow 'Adopting in an existing project' in references/setup-decisions.md instead. Nothing was written.")
+}
 
 function Resolve-Ref([string]$r) {
     if ($ourLayers -contains $r) { return "$Prefix.$r" }

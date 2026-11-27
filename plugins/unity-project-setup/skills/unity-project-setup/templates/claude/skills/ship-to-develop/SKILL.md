@@ -33,7 +33,8 @@ If any test fails, **do not commit**. Show the failures and stop.
 
 ## 4. Commit
 
-- **If there is no `develop` branch** (neither local nor `origin/develop`), tell the user and offer to create it locally from `main`. Creating it on the remote happens only with the push approval in step 6.
+- **If `develop` exists only on the remote** (a fresh clone checks out just `main`), create the local branch first: `git branch develop origin/develop`. Without it, the commands below fail with `invalid reference: develop`.
+- **If there is no `develop` branch at all** (neither local nor `origin/develop`), tell the user and offer to create it locally from `main`. Creating it on the remote happens only with the push approval in step 6.
 - Commit on a `feat/<short-name>` branch. If you are on `develop` or `main`, create the branch from `develop` first (switching keeps your uncommitted changes).
 - Message: title `feat|fix|refactor|docs|chore|test(scope): …` describing what changed and how (reason or condition in parentheses). Body: `- ` lines with what changed and numbers (before → after), and how it was verified. End with any attribution trailer your environment requires.
 - Never skip hooks (`--no-verify`).

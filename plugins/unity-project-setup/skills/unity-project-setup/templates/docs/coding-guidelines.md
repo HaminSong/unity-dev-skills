@@ -21,7 +21,7 @@
 
 ## 2. Style
 
-- An XML `<summary>` on every class, public method and public property, in the team's working language: intent, side effects and when it is called — briefly.
+- An XML `<summary>` on every class, public method and public property, in the team's working language: intent, side effects and when it is called — briefly. Test methods are the exception: their name states the behaviour under test.
 - Names: private fields `_camelCase`, static private `s_camelCase`, public properties and methods `PascalCase`, interfaces prefixed with `I`. `.editorconfig` enforces these.
 - Namespaces match the assembly name (`{{PREFIX}}.Core`, `{{PREFIX}}.Gameplay` …). Subfolders become sub-namespaces.
 - Mark tunable numbers with a `// Tune here` comment, and move them to a Data ScriptableObject where practical.

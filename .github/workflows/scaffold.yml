@@ -21,6 +21,9 @@ jobs:
       - name: Run scaffold checks
         shell: pwsh
         run: ./tests/scaffold.Tests.ps1
+      - name: Run ship-to-develop git checks
+        shell: pwsh
+        run: ./tests/ship-sync.Tests.ps1
 
   windows-powershell:
     name: Windows PowerShell 5.1
@@ -30,3 +33,6 @@ jobs:
       - name: Run scaffold checks
         shell: powershell
         run: .\tests\scaffold.Tests.ps1
+      - name: Run ship-to-develop git checks
+        shell: powershell
+        run: .\tests\ship-sync.Tests.ps1

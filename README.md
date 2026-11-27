@@ -89,7 +89,7 @@ The skill is built for a **new or nearly empty** project. It changes how your co
 - **It always creates the full folder tree and one asmdef per layer.** All 9 `Assets/` folders and every layer assembly are created even if empty; only `Data`, `UI` and `Persistence` can be left out with `-Skip`. Unity writes a `.meta` for each folder, so empty folders end up in git. Delete the ones you don't want afterwards.
 - **Assembly definitions change what can see what.**
   - Scripts left outside `Assets/Scripts/<Layer>/` still compile into `Assembly-CSharp`, and layer assemblies **cannot reference `Assembly-CSharp`** (or `Assembly-CSharp-firstpass` from `Plugins/`). Third-party assets without their own asmdef are invisible to your layered code until you give them one.
-  - If a folder such as `Assets/Scripts/UI` already contains scripts, the new asmdef pulls them into that layer and they may stop compiling. For existing projects, follow "Adopting in an existing project" in [`setup-decisions.md`](plugins/unity-project-setup/skills/unity-project-setup/references/setup-decisions.md) instead of running the scaffold blindly.
+  - If a folder such as `Assets/Scripts/UI` already contains scripts, a new asmdef would pull them into that layer and they may stop compiling, so the scaffold stops and writes nothing. For existing projects, follow "Adopting in an existing project" in [`setup-decisions.md`](plugins/unity-project-setup/skills/unity-project-setup/references/setup-decisions.md) instead of running the scaffold blindly.
   - An empty layer produces no DLL until it contains a script. That is normal Unity behaviour.
 - **Apply Defaults changes Editor behaviour project-wide.**
   - **Input System only** — any code or asset that uses legacy `UnityEngine.Input` or `StandaloneInputModule` throws at runtime. Needs an Editor restart.
@@ -174,29 +174,28 @@ plugins/unity-project-setup/
     references/                          layer decisions, adoption path, why each rule exists
 README.ko.md                             Korean summary
 tests/scaffold.Tests.ps1                 scaffold checks, run by CI
+tests/ship-sync.Tests.ps1                ship-to-develop git steps against throwaway repositories, run by CI
 .github/workflows/scaffold.yml           CI: the checks on Ubuntu, macOS and Windows
 ```
 
 ## Verification status (0.2.2)
 
-- **Automated (CI on every push to `main` and every pull request):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) runs 50 checks on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1. The checks cover:
-  - dry run and real run, then a re-run that skips everything
-  - folders, asmdefs and reference rules
-  - layer removal, URP off and fast Play Mode
-  - missing-package warnings, invalid input and a non-Unity folder
+- **Automated (CI on every push to `main` and every pull request):** two scripts run on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1.
+  - [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1), 53 checks: dry run and real run, then a re-run that skips everything; folders, asmdefs and reference rules; layer removal, URP off and fast Play Mode; missing-package warnings, invalid input and a non-Unity folder; a trailing path separator; refusing a layer folder that already holds code, with nothing written
+  - [`tests/ship-sync.Tests.ps1`](tests/ship-sync.Tests.ps1), 15 checks: the `ship-to-develop` git steps against throwaway repositories with someone else's uncommitted work in the tree — a fresh clone without a local `develop`, a behind-only `develop` fast-forwarded without touching the tree, and both sides moved (fast-forward refused; with the user's OK, merging `origin/develop` keeps the earlier merge commit). It also confirms the 0.2.1 step (`git pull --rebase` before committing) is refused in that setup
 - **Run by the author, not automated:** end-to-end in Unity 6000.3.28f1 (batch mode, fresh project with Input System 1.20.1, Test Framework 1.6.0, uGUI 2.0.0):
   - all generated code compiles; scripts placed in a layer folder compile into that layer's assembly (none fall into `Assembly-CSharp`)
   - **Tools > Project Setup > Apply Defaults** runs and every setting is saved to `ProjectSettings/`. Without `-FastPlayMode` the Enter Play Mode settings are left untouched; with it, Domain Reload is turned off
   - the 13 EditMode tests pass through the Unity Test Runner. The no-GC-allocation check on Publish was confirmed to fail when Publish allocates
   - in a project without the Input System package, Apply Defaults leaves Active Input Handling unchanged and warns
   - forbidden references fail to compile: Core → UnityEngine (`CS0246`) and UI → Gameplay (`CS0234`)
+  - re-run for 0.2.2 on a new project that also has URP 17.3.0: with a script in every layer, all eight assemblies build and their package references (TextMeshPro, uGUI, Input System, URP) resolve; Apply Defaults writes all six settings; 13/13 tests pass; a bare `: Editor` inside the `<Prefix>.Editor` namespace fails with `CS0118` and `: UnityEditor.Editor` compiles
 - **Git steps on the generated project (run by the author):**
   - `git init -b main`, first commit on `main`, then `develop` on the same commit
   - `git lfs install --local` leaves the global git config unchanged
   - `.gitignore` excludes `Library/`; images route through LFS
   - with the merge driver from `docs/collaboration.md` §2a configured, git invokes UnityYAMLMerge and combines edits to two different fields of a settings asset
-  - the `ship-to-develop` git sequence with no remote: `feat/` commit → merge into `develop` → branch deleted, no push
-  - the `ship-to-develop` sync step with a remote and someone else's uncommitted work in the tree (0.2.2): when `develop` is only behind, `git fetch origin develop:develop` fast-forwards it and the work in progress is left untouched; when a local merge is still waiting for push approval and the remote has moved, the fast-forward is refused and merging `origin/develop` keeps both merge commits. The 0.2.1 step (`git pull --rebase` before committing) refused to run in the same setup
+  - the `ship-to-develop` git sequence with no remote: `feat/` commit → merge into `develop` → branch deleted, no push (the steps with a remote are automated, above)
 - **Install:** installing as a Claude Code plugin from this repository, which registers one skill.
 - **Live Editor, existing project (run by the author):** the installed plugin was used by an agent on an existing Unity 6.3 project with 23 scripts and uncommitted work in progress, in the open Editor:
   - Layer assemblies were added beside the existing code. That code stayed in `Assembly-CSharp` and still compiled.

@@ -96,6 +96,19 @@ try {
     }
     $r = Invoke-Scaffold @("-ProjectPath", $work, "-DryRun")
     Check ($r.ExitCode -ne 0 -and $r.Output -match "Not a Unity project") "rejects a non-Unity folder"
+
+    # 7. A trailing separator on -ProjectPath does not garble the reported paths
+    $d = New-FakeProject "D" $full
+    $r = Invoke-Scaffold @("-ProjectPath", ($d + [IO.Path]::DirectorySeparatorChar), "-DryRun")
+    Check ($r.ExitCode -eq 0 -and $r.Output -match "DIR\s+Assets[\\/]Art") "trailing separator keeps reported paths intact"
+
+    # 8. Existing code in a layer folder stops the scaffold before anything is written
+    $e = New-FakeProject "E" $full
+    New-Item -ItemType Directory -Force (Join-Path $e "Assets/Scripts/UI") | Out-Null
+    Set-Content -LiteralPath (Join-Path $e "Assets/Scripts/UI/OldHud.cs") "public class OldHud { }"
+    $r = Invoke-Scaffold @("-ProjectPath", $e)
+    Check ($r.ExitCode -ne 0 -and $r.Output -match "already contain code") "refuses a layer folder that already holds code"
+    Check (-not (Test-Path -LiteralPath (Join-Path $e "docs")) -and -not (Test-Path -LiteralPath (Join-Path $e "Assets/Scripts/UI/Game.UI.asmdef"))) "nothing written when refused"
 }
 finally {
     Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue

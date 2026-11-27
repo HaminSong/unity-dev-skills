@@ -94,7 +94,7 @@ Unity 공식 [`unity:new-unity-project`](https://github.com/Unity-Technologies/u
 - **폴더 9개와 레이어별 어셈블리를 항상 만듭니다.** 비어 있어도 만들며, `Data`, `UI`, `Persistence`만 `-Skip`으로 뺄 수 있습니다.
 - **어셈블리가 참조 범위를 바꿉니다.**
   - 레이어 어셈블리는 `Assembly-CSharp`를 참조할 수 없습니다. 따라서 asmdef가 없는 에셋스토어 에셋은 레이어 코드에서 쓸 수 없습니다.
-  - 이미 스크립트가 있는 기존 프로젝트는 스크립트를 무작정 돌리지 말고 [`setup-decisions.md`](plugins/unity-project-setup/skills/unity-project-setup/references/setup-decisions.md)의 도입 절차를 따르세요.
+  - 레이어 폴더(예: `Assets/Scripts/UI`)에 이미 코드가 있으면 스캐폴드가 아무것도 쓰지 않고 멈춥니다. 이미 스크립트가 있는 기존 프로젝트는 스크립트를 무작정 돌리지 말고 [`setup-decisions.md`](plugins/unity-project-setup/skills/unity-project-setup/references/setup-decisions.md)의 도입 절차를 따르세요.
 - **Apply Defaults가 바꾸는 설정:**
   - **Input System 전용:** 옛 `UnityEngine.Input`을 쓰는 코드는 실행 중 에러가 납니다. 패키지가 없으면 바꾸지 않고 경고만 합니다.
   - **Linear 색 공간:** 기존 아트의 색감이 달라집니다.
@@ -123,13 +123,15 @@ Unity 공식 [`unity:new-unity-project`](https://github.com/Unity-Technologies/u
 
 ## 검증 상태 (0.2.2)
 
-- **자동(CI, `main` push와 PR마다):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1)의 검사 50개를 PowerShell 7(Ubuntu, macOS, Windows)과 Windows PowerShell 5.1에서 실행합니다.
+- **자동(CI, `main` push와 PR마다):** 두 스크립트를 PowerShell 7(Ubuntu, macOS, Windows)과 Windows PowerShell 5.1에서 실행합니다.
+  - [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) 검사 53개: 실행 · 다시 실행 · 레이어 빼기 · 옵션, 경로 끝 구분자, 코드가 이미 있는 레이어 폴더에서 아무것도 쓰지 않고 멈추기 등
+  - [`tests/ship-sync.Tests.ps1`](tests/ship-sync.Tests.ps1) 검사 15개: 남의 커밋 안 된 작업이 있는 임시 저장소에서 `ship-to-develop` git 단계 — 로컬 `develop`이 없는 새 클론, 뒤처지기만 한 `develop` 앞으로 감기(작업 트리 그대로), 양쪽에 커밋이 있을 때 멈춤과 승인 뒤 병합. 0.2.1의 "커밋 전 `git pull --rebase`"가 같은 상황에서 거부되는 것도 확인합니다.
 - **작성자가 직접 실행(Unity 6000.3.28f1, 배치 모드):**
   - 생성된 코드가 컴파일되고, 스크립트가 폴더에 맞는 어셈블리로 들어갑니다.
   - Apply Defaults가 설정을 적용하고 저장합니다. Input System 패키지가 없으면 입력 설정을 건드리지 않습니다.
   - EditMode 테스트 13/13 통과. 이 중 Publish 메모리 할당 검사는 실제로 할당이 생기면 실패하는 것까지 확인했습니다.
   - 금지된 참조는 컴파일 오류가 납니다: Core → UnityEngine(`CS0246`), UI → Gameplay(`CS0234`).
-  - `ship-to-develop` 받기 단계(0.2.2): 남의 커밋 안 된 작업이 작업 트리에 있어도 `develop`이 뒤처지기만 했으면 `git fetch origin develop:develop`로 앞으로 감기고 작업은 그대로 남습니다. 양쪽에 커밋이 있으면 멈추고 묻습니다. 0.2.1의 "커밋 전 `git pull --rebase`"는 같은 상황에서 실행이 거부됐습니다.
+  - 0.2.2 재실행(URP 17.3.0까지 넣은 새 프로젝트): 레이어마다 스크립트를 넣으면 어셈블리 8개가 모두 빌드되고 패키지 참조(TextMeshPro, uGUI, Input System, URP)가 풀립니다. Apply Defaults 설정 6가지 저장, 테스트 13/13 통과. `<접두어>.Editor` 네임스페이스 안의 `: Editor`는 `CS0118`, `: UnityEditor.Editor`는 컴파일됩니다.
   - git 단계: `main` 먼저 커밋 후 `develop`, 전역 설정을 바꾸지 않는 LFS, UnityYAMLMerge 병합, 원격 없는 `ship-to-develop` 순서
 - **실행 중인 에디터, 기존 프로젝트(작성자가 직접 실행):** 설치한 플러그인을 에이전트가 스크립트 23개와 커밋 안 된 작업이 있는 Unity 6.3 프로젝트에 적용했습니다.
   - 레이어 어셈블리는 기존 코드 옆에 추가됐고, 기존 코드는 `Assembly-CSharp`에 그대로 남아 컴파일됐습니다.

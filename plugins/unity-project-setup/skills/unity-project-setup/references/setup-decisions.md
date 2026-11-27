@@ -25,7 +25,7 @@ When in doubt, keep the layer. An empty asmdef costs almost nothing; splitting a
 
 - **2D** — URP's 2D Renderer uses the same assembly reference (`Unity.RenderPipelines.Universal.Runtime`). 2D physics stays inside Gameplay.
 - **PC / console** — orientation `Landscape`; everything else is identical.
-- **Throwaway prototype (a day or two)** — ask once: "Only Core, Gameplay and Editor?" If it might become a real project, scaffold everything.
+- **Throwaway prototype (a day or two)** — ask once whether to leave out the optional layers (`-Skip "Data,UI,Persistence"`), which keeps Core, Gameplay, Bootstrap, Editor and Core.Tests. If it might become a real project, scaffold everything.
 - **Addressables / Localization** — when adopted, add the package's assembly reference only to the layers that need it (e.g. Localization in UI only). Do not pre-add them.
 
 ## Adopting in an existing project
