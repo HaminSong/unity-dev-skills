@@ -36,6 +36,7 @@
   1. Clicks need an `EventSystem` with an `InputSystemUIInputModule`.
   2. `AddComponent<Button>()` does not set `targetGraphic` — assign it yourself.
   3. A `Button`'s ColorTint overwrites `Image.color` as soon as it is active — put background colors in the `ColorBlock`.
+- **Inside `{{PREFIX}}.*` namespaces, write `UnityEditor.Editor` in full.** The Editor assembly's namespace is `{{PREFIX}}.Editor`, so a bare `Editor` (as in `class FooInspector : Editor`) resolves to that namespace and fails with `CS0118: 'Editor' is a namespace but is used like a type`. Write `: UnityEditor.Editor`, or alias it: `using UnityEditorBase = UnityEditor.Editor;`.
 - **Values serialized in scenes and prefabs beat code defaults.** Changing a field initializer does not affect scenes that already saved the field.
 - **Write code that survives Domain Reload being off.** Fast Enter Play Mode may be on in this project (Project Settings > Editor > Enter Play Mode Settings), and then static fields keep their values between Play sessions. Any mutable static field (state, not a cache) gets a reset method that runs when Play starts — harmless when Domain Reload is on:
   ```csharp

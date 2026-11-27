@@ -2,7 +2,7 @@
 
 [![scaffold CI](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml/badge.svg)](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.1-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.2.2-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
 
@@ -116,12 +116,12 @@ Unity 공식 [`unity:new-unity-project`](https://github.com/Unity-Technologies/u
 | 세션 간 인수인계 | 문서가 곧 인수인계. 끝내기 전에 관련 문서를 지금 상태로 고침 |
 | 병렬 작업 | 지시서 틀, 서브 작업마다 별도 작업 폴더(worktree), 메인만 고치는 파일(씬, 합성 루트), 시작 전 파일 겹침 확인 |
 | Unity 에디터 함께 쓰기 | Play 상태 먼저 확인, 내가 켠 Play는 내가 끄기, 테스트 전 프리팹 편집 화면 닫기 |
-| 안전한 커밋 | 내 파일만 담기, 먼저 받기, 테스트 후 커밋, push는 명시적 승인, 강제 금지 |
+| 안전한 커밋 | 내 파일만 담기, 테스트 후 커밋, 커밋 뒤 작업 트리를 건드리지 않고 develop 받기, push는 명시적 승인, 강제 금지 |
 | 구조를 키울 때 | 파일 줄 수 제한과 미리 적어 둔 확장 조건 |
 
 **이 스킬이 하지 않는 것:** 이 스킬만으로 에이전트가 알아서 다 하게 되지는 않습니다. 무엇을 만들지 정하고, 검토하고, `main`에 반영하는 것은 사람이 합니다.
 
-## 검증 상태 (0.2.1)
+## 검증 상태 (0.2.2)
 
 - **자동(CI, `main` push와 PR마다):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1)의 검사 50개를 PowerShell 7(Ubuntu, macOS, Windows)과 Windows PowerShell 5.1에서 실행합니다.
 - **작성자가 직접 실행(Unity 6000.3.28f1, 배치 모드):**
@@ -129,6 +129,7 @@ Unity 공식 [`unity:new-unity-project`](https://github.com/Unity-Technologies/u
   - Apply Defaults가 설정을 적용하고 저장합니다. Input System 패키지가 없으면 입력 설정을 건드리지 않습니다.
   - EditMode 테스트 13/13 통과. 이 중 Publish 메모리 할당 검사는 실제로 할당이 생기면 실패하는 것까지 확인했습니다.
   - 금지된 참조는 컴파일 오류가 납니다: Core → UnityEngine(`CS0246`), UI → Gameplay(`CS0234`).
+  - `ship-to-develop` 받기 단계(0.2.2): 남의 커밋 안 된 작업이 작업 트리에 있어도 `develop`이 뒤처지기만 했으면 `git fetch origin develop:develop`로 앞으로 감기고 작업은 그대로 남습니다. 양쪽에 커밋이 있으면 멈추고 묻습니다. 0.2.1의 "커밋 전 `git pull --rebase`"는 같은 상황에서 실행이 거부됐습니다.
   - git 단계: `main` 먼저 커밋 후 `develop`, 전역 설정을 바꾸지 않는 LFS, UnityYAMLMerge 병합, 원격 없는 `ship-to-develop` 순서
 - **실행 중인 에디터, 기존 프로젝트(작성자가 직접 실행):** 설치한 플러그인을 에이전트가 스크립트 23개와 커밋 안 된 작업이 있는 Unity 6.3 프로젝트에 적용했습니다.
   - 레이어 어셈블리는 기존 코드 옆에 추가됐고, 기존 코드는 `Assembly-CSharp`에 그대로 남아 컴파일됐습니다.

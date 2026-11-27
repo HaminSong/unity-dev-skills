@@ -3,9 +3,9 @@ name: ship-to-develop
 description: Finishes a task in this repository by committing it on a feat/ branch, merging into develop and, with separate confirmation, pushing develop — staging only the files this task changed. Use when the user asks to ship, merge into develop or push this task, or types /ship-to-develop. A plain "commit" request is not enough to push.
 ---
 
-# ship-to-develop — sync → commit → merge into develop → (confirm) push
+# ship-to-develop — commit → sync develop → merge into develop → (confirm) push
 
-Asking for this skill approves committing and merging into the local `develop`. **Pushing is a separate approval**: unless the user's request explicitly said to push, stop before step 6's push and ask. If the user only asked to commit, stop after step 5. The rules behind each step are in `docs/collaboration.md` §2.
+Asking for this skill approves committing and merging into the local `develop`. **Pushing is a separate approval**: unless the user's request explicitly said to push, stop before step 6's push and ask. If the user only asked to commit, stop after step 4. The rules behind each step are in `docs/collaboration.md` §2.
 
 ## 1. Choose what to stage
 
@@ -31,23 +31,30 @@ Before running tests:
 
 If any test fails, **do not commit**. Show the failures and stop.
 
-## 4. Sync
+## 4. Commit
 
-- Check for a remote with `git remote`. **If there is no `origin`**, skip syncing here and skip the push in step 6; say so in the report.
 - **If there is no `develop` branch** (neither local nor `origin/develop`), tell the user and offer to create it locally from `main`. Creating it on the remote happens only with the push approval in step 6.
-- Otherwise `git fetch origin`. If local `develop` is behind `origin/develop`, update it before merging: `git checkout develop` then `git pull --rebase origin develop`, then return to your task branch.
-- On conflicts, do not resolve them on your own — show them and ask.
-
-## 5. Commit
-
-- Commit on a `feat/<short-name>` branch. If you are on `develop` or `main`, create the branch from `develop` first.
+- Commit on a `feat/<short-name>` branch. If you are on `develop` or `main`, create the branch from `develop` first (switching keeps your uncommitted changes).
 - Message: title `feat|fix|refactor|docs|chore|test(scope): …` describing what changed and how (reason or condition in parentheses). Body: `- ` lines with what changed and numbers (before → after), and how it was verified. End with any attribution trailer your environment requires.
 - Never skip hooks (`--no-verify`).
+
+## 5. Sync develop
+
+Sync **after** committing, and without touching the working tree. Before the commit, your task's changes and other people's work in progress are still uncommitted, and `git pull --rebase` refuses to run (`cannot pull with rebase: You have unstaged changes`).
+
+- Check for a remote with `git remote`. **If there is no `origin`**, skip this step and the push in step 6; say so in the report.
+- `git fetch origin`, then compare: `git rev-list --left-right --count develop...origin/develop` prints `<only local> <only remote>`.
+  - `0 0` or `N 0` — nothing to bring in.
+  - `0 N` (behind only) — from your task branch, run `git fetch origin develop:develop`. It fast-forwards local `develop` without checking it out, so the working tree is untouched.
+  - `N M` (both sides have commits, e.g. an earlier merge is still waiting for push approval) — **stop and ask**. Show `git log --oneline --graph develop...origin/develop`. Do not rebase `develop`: that would flatten the earlier merge commit. With the user's OK, step 6 merges `origin/develop` into `develop` before merging the task branch.
+- On conflicts, do not resolve them on your own — show them and ask.
 
 ## 6. Merge into develop and push
 
 ```bash
 git checkout develop
+# only if step 5 found both sides had commits and the user said OK:
+git merge origin/develop
 git merge feat/<name>
 git branch -d feat/<name>
 # only with the user's push approval and an origin remote:

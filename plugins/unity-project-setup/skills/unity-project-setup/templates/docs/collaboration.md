@@ -12,7 +12,7 @@
 
 ## 2. Commits
 
-- **Sync before committing.** `git fetch`; if behind, update first (`git pull --rebase` when you have unpushed commits).
+- **Sync `develop` after committing, before merging into it.** Before the commit, the tree holds uncommitted changes (yours and other people's work in progress) and `git pull --rebase` refuses to run. Commit on the task branch, `git fetch origin`, then: if `develop` is only behind, `git fetch origin develop:develop` fast-forwards it without touching the working tree; if both sides have new commits, stop and ask — never rebase `develop`, which would flatten merge commits.
 - **Stage only the files changed by this task.** No `git add -A` or `git add .` — the working tree always contains someone else's work in progress.
 - Never staged without explicit confirmation: `Packages/`, font assets, third-party asset packs (`Assets/ThirdParty`), verification GIFs and captures, `.claude/`.
 - When you create a `.cs` file, also stage the `.meta` Unity generated for it.

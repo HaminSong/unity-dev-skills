@@ -27,7 +27,7 @@ Read this when the user asks why a rule exists or wants to change one. Every rul
 
 - **One branch prefix.** `feature/`, `feat/` and two agent-specific prefixes were all in use at different times. New projects use `feat/<short-name>` only.
 - **Stage only this task's files.** The working tree always contains someone else's work in progress. A `git add -A` once committed a half-finished font import and package change.
-- **Pull before committing.** A commit pushed from a second machine blocked a push with a divergent history.
+- **Sync `develop` — after committing, without touching the working tree.** A commit pushed from a second machine blocked a push with a divergent history, so a sync step was added. Its first version synced before committing with `git pull --rebase`, which refuses to run while anyone's work in progress is uncommitted in the tree; it now commits first and fast-forwards `develop` with `git fetch origin develop:develop`.
 - **Scenes and the composition root belong to the main session.** Scene merge conflicts are practically unresolvable, so parallel task briefs list files that must not be touched.
 - **Preserve GUIDs when moving or renaming `.cs` files.** Otherwise: Missing Script on every scene that used it.
 - **Keep event publish order during refactors.** Subscribers depended on the order (score → heal → wave cleared).

@@ -2,7 +2,7 @@
 
 [![scaffold CI](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml/badge.svg)](https://github.com/HaminSong/unity-dev-skills/actions/workflows/scaffold.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.1-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
+[![Version](https://img.shields.io/badge/version-0.2.2-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
 [![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
 
@@ -114,7 +114,7 @@ Each piece the skill lays down answers a question an agent would otherwise have 
 | How to hand off between sessions | The docs are the handoff: before finishing, agents update the docs to the current state instead of writing separate notes |
 | How to work in parallel | A task brief template, one worktree per sub-task, a list of main-only files (scenes, composition root) and a file-overlap check before starting |
 | How to share one Unity Editor | Check Play state first, stop your own Play session, close Prefab Mode before tests, never call `AssetDatabase.SaveAssets()` |
-| How to commit safely | `ship-to-develop`: stage only your own files, sync first, test before committing, push only with an explicit OK, never force |
+| How to commit safely | `ship-to-develop`: stage only your own files, test, commit, then sync `develop` without touching uncommitted work, push only with an explicit OK, never force |
 | When to grow the structure | File-size limits and written growth triggers, so agents neither over-engineer nor let files bloat |
 
 ![Unity Console: error CS0234, the namespace 'Gameplay' does not exist in 'Starfall', raised by a UI script that references a Gameplay type](media/layer-violation.jpg)
@@ -177,7 +177,7 @@ tests/scaffold.Tests.ps1                 scaffold checks, run by CI
 .github/workflows/scaffold.yml           CI: the checks on Ubuntu, macOS and Windows
 ```
 
-## Verification status (0.2.1)
+## Verification status (0.2.2)
 
 - **Automated (CI on every push to `main` and every pull request):** [`tests/scaffold.Tests.ps1`](tests/scaffold.Tests.ps1) runs 50 checks on PowerShell 7 (Ubuntu, macOS, Windows) and Windows PowerShell 5.1. The checks cover:
   - dry run and real run, then a re-run that skips everything
@@ -196,6 +196,7 @@ tests/scaffold.Tests.ps1                 scaffold checks, run by CI
   - `.gitignore` excludes `Library/`; images route through LFS
   - with the merge driver from `docs/collaboration.md` §2a configured, git invokes UnityYAMLMerge and combines edits to two different fields of a settings asset
   - the `ship-to-develop` git sequence with no remote: `feat/` commit → merge into `develop` → branch deleted, no push
+  - the `ship-to-develop` sync step with a remote and someone else's uncommitted work in the tree (0.2.2): when `develop` is only behind, `git fetch origin develop:develop` fast-forwards it and the work in progress is left untouched; when a local merge is still waiting for push approval and the remote has moved, the fast-forward is refused and merging `origin/develop` keeps both merge commits. The 0.2.1 step (`git pull --rebase` before committing) refused to run in the same setup
 - **Install:** installing as a Claude Code plugin from this repository, which registers one skill.
 - **Live Editor, existing project (run by the author):** the installed plugin was used by an agent on an existing Unity 6.3 project with 23 scripts and uncommitted work in progress, in the open Editor:
   - Layer assemblies were added beside the existing code. That code stayed in `Assembly-CSharp` and still compiled.

@@ -82,7 +82,7 @@ What the script lays down:
 | `Assets/Scripts/Editor/ProjectSetup/` | `ApplyProjectSettings` (run in Step 3) |
 | Project root | `.gitattributes`, `.gitignore`, `.editorconfig`, `AGENTS.md`, `CLAUDE.md` |
 | `docs/` | `README.md` (index), `ARCHITECTURE_MAP.md`, `architecture-design.md`, `coding-guidelines.md`, `collaboration.md`, `workflow.md` (idea → proposal → decision → plan → change, where documents go), `tasks/TEMPLATE.md` |
-| `.claude/skills/ship-to-develop/` | Project skill: sync → commit → merge to `develop` → push only with a separate OK |
+| `.claude/skills/ship-to-develop/` | Project skill: commit → sync `develop` → merge into `develop` → push only with a separate OK |
 
 ### Step 3 — Apply project settings inside Unity
 
