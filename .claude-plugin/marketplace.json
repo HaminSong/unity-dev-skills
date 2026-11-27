@@ -9,7 +9,7 @@
       "name": "unity-project-setup",
       "source": "./plugins/unity-project-setup",
       "description": "Lays a layered asmdef architecture, standard folders, Editor-applied project settings, Unity git files, agent-ready docs, coding/commit/collaboration rules, a tested EventBus and a commit workflow skill onto a new Unity project.",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "category": "Developer Tools"
     }
   ]

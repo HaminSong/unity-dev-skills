@@ -1,5 +1,10 @@
 # unity-dev-skills
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/HaminSong/unity-dev-skills/releases)
+[![Unity 6](https://img.shields.io/badge/Unity-6-black.svg?logo=unity)](https://unity.com)
+[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-D97757.svg)](https://docs.claude.com/en/docs/claude-code/plugins)
+
 Claude Code skills for Unity game development.
 
 | Plugin | What it does |
@@ -91,7 +96,7 @@ plugins/unity-project-setup/
     references/                          layer decisions, adoption path, why each rule exists
 ```
 
-## Verification status (1.0.0)
+## Verification status (0.1.0)
 
 - `scaffold.ps1` (Windows PowerShell 5.1): fresh run, re-run (everything skipped), layer removal, URP off, missing-package warnings, invalid prefix/layer/orientation, non-Unity folder.
 - Generated Core, Core.Tests, Bootstrap and Editor code compiles against Unity 6000.3.28f1 assemblies; the 8 EventBus tests pass outside the Editor.
